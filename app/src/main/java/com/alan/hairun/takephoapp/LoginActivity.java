@@ -8,6 +8,8 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.alan.hairun.takephoapp.utils.PermissionUtils;
+
 /**
  * @author: Alan
  * @date: 2020/5/8 0008
@@ -20,7 +22,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        PermissionUtils.initPermission(this,new PermissionUtils.PermissionHolder());
         Button button = findViewById(R.id.login);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
