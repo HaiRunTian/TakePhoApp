@@ -1,9 +1,14 @@
 package com.alan.hairun.takephoapp.utils;
 
+import android.content.Context;
 import android.util.SparseArray;
+import android.widget.Toast;
 
 
 import com.alan.hairun.gen.DaoSession;
+import com.alan.hairun.gen.ProjectBeanDao;
+import com.alan.hairun.takephoapp.MainActivity;
+import com.alan.hairun.takephoapp.bean.CheckDataBean;
 import com.alan.hairun.takephoapp.bean.ProjectBean;
 import com.alan.hairun.takephoapp.config.MyApplication;
 
@@ -40,7 +45,6 @@ import java.util.Map;
  * @time 2019/6/19.14:42
  */
 public class ExcelUtilsOfPoi {
-//    private static String[] title = new String[]{"序号", "检测日期", "点号", "完成工作量", "检测方法", "检测图幅", "作业组长", "组员1", "组员2", "备注"};
 
     /**
      * 创建excel表
@@ -53,86 +57,6 @@ public class ExcelUtilsOfPoi {
     }
 
 
-   /* *//**
-     * 初始化 当天检测记录表
-     *
-     * @Params :
-     * @author :HaiRun
-     * @date :2019/6/26  18:00
-     *//*
-    public static void initExcelLogSheet(String fileName, List<DetectionInfo> list) {
-//        int[] width = new int[]{5, 11, 13, 20, 30, 8, 8, 8, 8, 8};
-//        fileName = SuperMapConfig.DEFAULT_DATA_PATH + SuperMapConfig.DEFAULT_DATA_EXCEL_PATH + "/检测记录表.xls";
-        FileOutputStream outputStream = null;
-        try {
-            FileInputStream is = new FileInputStream(new File(fileName));
-            Workbook workbook = new HSSFWorkbook(is);
-            SparseArray<CellStyle> borderedStyle = createBorderedStyle(workbook);
-            Sheet sheet = workbook.getSheetAt(0);
-//            for (int i = 0; i < width.length; i++) {
-//                sheet.setColumnWidth(i, width[i] * 256);
-//            }
-            //设置复杂excel表头
-            setCellStyle(sheet, list.get(0));
-            //填入数据
-            if (list.size() > 0) {
-                for (int i = 0; i < list.size(); i++) {
-                    DetectionInfo info = list.get(i);
-                    LogUtills.i(info.toString());
-                    Row row = sheet.createRow(10 + i);
-                    row.setHeight((short) (256 * 1.2));
-                    Cell cell = row.createCell(0);
-                    cell.setCellStyle(borderedStyle.get(3));
-                    cell.setCellValue(info.getSerialNum());
-                    cell = row.createCell(1);
-                    cell.setCellStyle(borderedStyle.get(3));
-                    cell.setCellValue(info.getDetectionDate());
-
-                    cell = row.createCell(2);
-                    cell.setCellStyle(borderedStyle.get(3));
-                    String pointName = info.getPointName();
-                    cell.setCellValue(pointName);
-
-                    cell = row.createCell(3);
-                    String workload = info.getWorkload();
-                    cell.setCellStyle(borderedStyle.get(3));
-                    cell.setCellValue(workload);
-                    cell = row.createCell(4);
-                    cell.setCellStyle(borderedStyle.get(3));
-                    cell.setCellValue(info.getDetectionMethod());
-                    cell = row.createCell(5);
-                    cell.setCellStyle(borderedStyle.get(3));
-                    cell.setCellValue(info.getDetectionMap());
-                    cell = row.createCell(6);
-                    cell.setCellStyle(borderedStyle.get(3));
-                    cell.setCellValue(info.getGroupLeader());
-                    cell = row.createCell(7);
-                    cell.setCellStyle(borderedStyle.get(3));
-                    cell.setCellValue(info.getGroupMember1());
-                    cell = row.createCell(8);
-                    cell.setCellStyle(borderedStyle.get(3));
-                    cell.setCellValue(info.getGroupMember2());
-                    cell = row.createCell(9);
-                    cell.setCellStyle(borderedStyle.get(3));
-                }
-            }
-            outputStream = new FileOutputStream(fileName);
-            workbook.write(outputStream);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
 
     /**
      * 初始化 当天检测记录表
@@ -181,225 +105,8 @@ public class ExcelUtilsOfPoi {
         }
     }
 
-  /*  *//**
-     * 设置复制excel表头
-     *
-     * @Params :
-     * @author :HaiRun
-     * @date :2019/7/1  14:25
-     *//*
-    private static void setCellStyle(Sheet sheet, DetectionInfo info) {
 
-        //第五行1
-        Row row5 = sheet.createRow(4);
-        Cell cell5 = row5.createCell(0);
-        cell5.setCellValue("工程编码：" + info.getPrjCode());
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$5:$C$5"));
 
-        //第五行 2
-        Cell cell52 = row5.createCell(3);
-        cell52.setCellValue("工程名称：" + info.getPrjName());
-        mergingCells(sheet, CellRangeAddress.valueOf("$D$5:$E$5"));
-
-        //第五行 3
-        Cell cell53 = row5.createCell(5);
-        cell53.setCellValue("工程地点：" + info.getPrjSite());
-        mergingCells(sheet, CellRangeAddress.valueOf("$F$5:$H$5"));
-
-        //第五行 4
-        Cell cell54 = row5.createCell(8);
-        cell54.setCellValue("原始记录文件：");
-        mergingCells(sheet, CellRangeAddress.valueOf("$I$5:$J$5"));
-
-        //第六行1
-        Row row6 = sheet.createRow(5);
-        Cell cell61 = row6.createCell(0);
-        cell61.setCellValue("仪器名称：" + info.getApparatusName1());
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$6:$C$6"));
-        //第六行2
-        Cell cell62 = row6.createCell(3);
-        cell62.setCellValue("仪器编号：" + info.getApparatusCode1());
-        //第六行3
-        Cell cell63 = row6.createCell(4);
-        cell63.setCellValue("仪器名称：" + info.getApparatusName2() + "");
-        //第六行4
-        Cell cell64 = row6.createCell(5);
-        cell64.setCellValue("仪器编号：" + info.getApparatusCode2() + "");
-        mergingCells(sheet, CellRangeAddress.valueOf("$F$6:$H$6"));
-        //第六行5
-        Cell cell65 = row6.createCell(8);
-        cell65.setCellValue(info.getOriginal() + "");
-        mergingCells(sheet, CellRangeAddress.valueOf("$I$6:$J$6"));
-
-        //第七行1
-        Row row7 = sheet.createRow(6);
-        Cell cell71 = row7.createCell(0);
-        cell71.setCellValue("检测标准：" + info.getDetectionStandard());
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$7:$E$7"));
-        //第七行2
-        Cell cell72 = row7.createCell(5);
-        cell72.setCellValue("备注：" + info.getRemark() + "");
-        mergingCells(sheet, CellRangeAddress.valueOf("$F$7:$J$7"));
-
-        //第8行
-        Row row8 = sheet.createRow(7);
-        Cell cell81 = row8.createCell(0);
-        cell81.setCellValue("检测标准：" + info.getDetectionStandard());
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$8:$E$8"));
-        //第七行2
-        Cell cell82 = row8.createCell(5);
-        cell82.setCellValue("备注：" + info.getRemark() + "");
-        mergingCells(sheet, CellRangeAddress.valueOf("$F$8:$J$8"));
-
-    }
-*/
-    /**
-     * 设置复制excel表头
-     *
-     * @Params :
-     * @author :HaiRun
-     * @date :2019/7/1  14:25
-     */
-/*    private static void setCellStyle(SparseArray<CellStyle> borderedStyle, Sheet sheet, DetectionInfo info) {
-        //第一行
-        Row row1 = sheet.createRow(0);
-        row1.setHeight((short) (256 * 1.6));
-        Cell cell = row1.createCell(0);
-        cell.setCellStyle(borderedStyle.get(0));
-        cell.setCellValue("广州市天驰测绘技术有限公司");
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$1:$J$1"));
-        //第二行
-        Row row2 = sheet.createRow(1);
-        row2.setHeight((short) (256 * 1.6));
-        Cell cell2 = row2.createCell(0);
-        cell2.setCellStyle(borderedStyle.get(0));
-        cell2.setCellValue("现 场 检 测 记 录 表");
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$2:$J$2"));
-        //第三行
-        Row row3 = sheet.createRow(2);
-        row3.setHeight((short) (256 * 1.6));
-        Cell cell3 = row3.createCell(0);
-        cell3.setCellStyle(borderedStyle.get(0));
-        cell3.setCellValue("管线探测事业部");
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$3:$J$3"));
-        //第四行
-        Row row4 = sheet.createRow(3);
-        row4.setHeight((short) (256 * 1.2));
-        Cell cell4 = row4.createCell(0);
-        cell4.setCellStyle(borderedStyle.get(4));
-        cell4.setCellValue("格式编码：TCIVA A1 LT5 18 07");
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$4:$D$4"));
-
-        Cell cell42 = row4.createCell(4);
-        cell42.setCellStyle(borderedStyle.get(4));
-        cell42.setCellValue("发文编号：");
-        mergingCells(sheet, CellRangeAddress.valueOf("$E$4:$H$4"));
-
-        Cell cell43 = row4.createCell(8);
-        cell43.setCellStyle(borderedStyle.get(4));
-        cell43.setCellValue("第  页/共  页");
-        mergingCells(sheet, CellRangeAddress.valueOf("$I$4:$J$4"));
-        //第五行1
-        Row row5 = sheet.createRow(4);
-        row5.setHeight((short) (256 * 1.2));
-        setCloumLine(borderedStyle, row5);
-        Cell cell5 = row5.createCell(0);
-        cell5.setCellStyle(borderedStyle.get(1));
-        cell5.setCellValue("工程编码：" + info.getPrjCode());
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$5:$C$5"));
-
-        //第五行 2
-        Cell cell52 = row5.createCell(3);
-        cell52.setCellStyle(borderedStyle.get(1));
-        cell52.setCellValue("工程名称：" + info.getPrjName());
-        mergingCells(sheet, CellRangeAddress.valueOf("$D$5:$E$5"));
-
-        //第五行 3
-        Cell cell53 = row5.createCell(5);
-        cell53.setCellStyle(borderedStyle.get(1));
-        cell53.setCellValue("工程地点：" + info.getPrjSite());
-        mergingCells(sheet, CellRangeAddress.valueOf("$F$5:$H$5"));
-
-        //第五行 4
-        Cell cell54 = row5.createCell(8);
-        cell54.setCellStyle(borderedStyle.get(1));
-        cell54.setCellValue("原始记录文件：");
-        mergingCells(sheet, CellRangeAddress.valueOf("$I$5:$J$5"));
-
-        //第六行1
-        Row row6 = sheet.createRow(5);
-        row6.setHeight((short) (256 * 1.2));
-        Cell cell61 = row6.createCell(0);
-        setCloumLine(borderedStyle, row6);
-        cell61.setCellStyle(borderedStyle.get(1));
-        cell61.setCellValue("仪器名称：" + info.getApparatusName1());
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$6:$C$6"));
-        //第六行2
-        Cell cell62 = row6.createCell(3);
-        cell62.setCellStyle(borderedStyle.get(1));
-        cell62.setCellValue("仪器编号：" + info.getApparatusCode1());
-//        mergingCells(sheet, CellRangeAddress.valueOf("$D$6:$E$6"));
-        //第六行3
-        Cell cell63 = row6.createCell(4);
-        cell63.setCellStyle(borderedStyle.get(1));
-        cell63.setCellValue("仪器名称：" + info.getApparatusName2() + "");
-//        mergingCells(sheet, CellRangeAddress.valueOf("$F$6:$G$6"));
-        //第六行4
-        Cell cell64 = row6.createCell(5);
-        cell64.setCellStyle(borderedStyle.get(1));
-        cell64.setCellValue("仪器编号：" + info.getApparatusCode2() + "");
-        mergingCells(sheet, CellRangeAddress.valueOf("$F$6:$H$6"));
-        //第六行5
-        Cell cell65 = row6.createCell(8);
-        cell65.setCellStyle(borderedStyle.get(1));
-        cell65.setCellValue(info.getOriginal() + "");
-        mergingCells(sheet, CellRangeAddress.valueOf("$I$6:$J$6"));
-        //第七行1
-        Row row7 = sheet.createRow(6);
-        row7.setHeight((short) (256 * 1.2));
-        setCloumLine(borderedStyle, row7);
-        Cell cell71 = row7.createCell(0);
-        cell71.setCellValue("检测标准：" + info.getDetectionStandard());
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$7:$E$7"));
-        cell71.setCellStyle(borderedStyle.get(1));
-        //第七行2
-        Cell cell72 = row7.createCell(5);
-        cell72.setCellStyle(borderedStyle.get(1));
-        cell72.setCellValue("备注：" + info.getRemark() + "");
-        mergingCells(sheet, CellRangeAddress.valueOf("$F$7:$J$7"));
-
-        //第8行
-        Row row8 = sheet.createRow(7);
-        row8.setHeight((short) (256 * 1.2));
-        setCloumLine(borderedStyle, row8);
-        Cell cell81 = row8.createCell(0);
-        cell81.setCellStyle(borderedStyle.get(1));
-        cell81.setCellValue("检测标准：" + info.getDetectionStandard());
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$8:$E$8"));
-        //第七行2
-        Cell cell82 = row8.createCell(5);
-        cell82.setCellStyle(borderedStyle.get(1));
-        cell82.setCellValue("备注：" + info.getRemark() + "");
-        mergingCells(sheet, CellRangeAddress.valueOf("$F$8:$J$8"));
-
-        //第九行
-        Row row9 = sheet.createRow(8);
-        row9.setHeight((short) (256 * 1.2));
-        setCloumLine(borderedStyle, row9);
-        Cell cell9 = row9.createCell(0);
-        cell9.setCellStyle(borderedStyle.get(2));
-        cell9.setCellValue("项 目 详 情 记 录 表");
-        mergingCells(sheet, CellRangeAddress.valueOf("$A$9:$J$9"));
-
-        //第十行
-        Row row10 = sheet.createRow(9);
-        row10.setHeight((short) (256 * 1.2));
-        for (int i = 0; i < title.length; i++) {
-            Cell cell10 = row10.createCell(i);
-            cell10.setCellStyle(borderedStyle.get(2));
-            cell10.setCellValue(title[i]);
-        }
-    }*/
     private static void setCloumLine(SparseArray<CellStyle> borderedStyle, Row row) {
         for (int i = 0; i < 10; i++) {
             row.createCell(i).setCellStyle(borderedStyle.get(1));
@@ -410,45 +117,65 @@ public class ExcelUtilsOfPoi {
      * 方法描述：初始化Excel表头
      *
      * @param colNameP  点表字段集合
-     * @param colNameL  线表字段集合
-     * @param pointName 点表名字
-     * @param lineName  线表名字
      * @Params : fileName excel文件名
      * @author :HaiRun
      * @date :2019/6/19  16:27
      */
-    public static void initExcel(String fileName, List<String> colNameP, List<String> colNameL, String pointName, String lineName) {
+    public static void initExcel(Context context,String fileName, List<CheckDataBean> colNameP) {
         FileOutputStream outputStream = null;
+        String[] array = new String[]{"类型","单项工程编号","规格指标","计量单位","上报量","第一次","第二次","第三次"};
         Workbook workbook = null;
         try {
             workbook = createWorkbook();
             SparseArray<CellStyle> borderedStyle = createBorderedStyle(workbook);
 
             //建立新的point sheet对象 excel表单
-            Sheet sheetPoint = workbook.createSheet(pointName);
+            Sheet sheetPoint = workbook.createSheet("sheet0");
             //在sheet里创建第一行，参数为行索引  0~65535直接
             Row row1 = sheetPoint.createRow(0);
             //创建单元格 0~255
-            for (int i = 0; i < colNameP.size(); i++) {
+            for (int i = 0; i < array.length; i++) {
                 Cell cell = row1.createCell(i);
                 cell.setCellStyle(borderedStyle.get(2));
-                cell.setCellValue(colNameP.get(i));
+                cell.setCellValue(array[i]);
             }
-            //建立新的point sheet对象 excel表单
-            Sheet sheetLine = workbook.createSheet(lineName);
-            //在sheet里创建第一行，参数为行索引  0~65535直接
-            Row row = sheetLine.createRow(0);
-            //创建单元格 0~255
-            for (int i = 0; i < colNameL.size(); i++) {
-                Cell cell = row.createCell(i);
+
+            for (int i = 0; i < colNameP.size(); i++) {
+                Row row = sheetPoint.createRow(i+1);
+                CheckDataBean dataBean = colNameP.get(i);
+                Cell cell = row.createCell(0);
                 cell.setCellStyle(borderedStyle.get(2));
-                cell.setCellValue(colNameL.get(i));
+                cell.setCellValue(dataBean.type);
+                Cell cell1 = row.createCell(1);
+                cell1.setCellStyle(borderedStyle.get(2));
+                cell1.setCellValue(dataBean.projectName);
+                Cell cell2 = row.createCell(2);
+                cell2.setCellStyle(borderedStyle.get(2));
+                cell2.setCellValue(dataBean.standard);
+                Cell cell3 = row.createCell(3);
+                cell3.setCellStyle(borderedStyle.get(2));
+                cell3.setCellValue(dataBean.unit);
+                Cell cell4 = row.createCell(4);
+                cell4.setCellStyle(borderedStyle.get(2));
+                cell4.setCellValue(dataBean.planNum);
+                Cell cell5 = row.createCell(5);
+                cell5.setCellStyle(borderedStyle.get(2));
+                cell5.setCellValue(dataBean.one);
+                Cell cell6 = row.createCell(6);
+                cell6.setCellStyle(borderedStyle.get(2));
+                cell6.setCellValue(dataBean.two);
+                Cell cell7 = row.createCell(7);
+                cell7.setCellStyle(borderedStyle.get(2));
+                cell7.setCellValue(dataBean.three);
             }
+
 
             outputStream = new FileOutputStream(fileName);
             workbook.write(outputStream);
+            Toast.makeText(context,"导出成功",Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             LogUtills.e("ExcelUtilsOfPoi ---------" + e.toString());
+            Toast.makeText(context,"导出失败",Toast.LENGTH_SHORT).show();
         } finally {
             try {
                 if (outputStream != null) {
@@ -805,27 +532,44 @@ public class ExcelUtilsOfPoi {
             //获取第一行列数
             int columnCount = row.getPhysicalNumberOfCells();
             LogUtills.i("行数", rowsP + "------------" + columnCount);
-            //遍历行数
+            //遍历行数 第二行开始
             for (int i = 1; i < rowsP; i++) {
                 Map<String, Object> map = new HashMap<>();
                 Row row1 = sheetPoint.getRow(i);
                 LogUtills.i("长度", columnCount + "======" + row1.getPhysicalNumberOfCells());
-                //遍历列数
-                for (int j = 0; j < columnCount; j++) {
+                //遍历列数 第一列开始
                     try {
-                        String cell = row.getCell(j).toString();
-                        map.put(row.getCell(j).toString(), row1.getCell(j).toString());
                         //导入数据库
                         DaoSession daoSession = MyApplication.getINSTANT().getDaoSession();
+                        //插入数据数据库 工程表 单一
                         ProjectBean bean = new ProjectBean();
-                        bean.setName(row1.getCell(j).toString());
+                        bean.setType(row1.getCell(0).toString());
+                        bean.setName(row1.getCell(1).toString());
+                        bean.setBitName(MainActivity.bitProject);
                         bean.setDate(DateTimeUtil.getCurrentDateFromFormat(DateTimeUtil.DATE_FORMAT_YYYYMMDD_HHMMSS));
-                        daoSession.getProjectBeanDao().insert(bean);
+                        List<ProjectBean> list = daoSession.getProjectBeanDao().queryBuilder()
+                                .where(ProjectBeanDao.Properties.BitName.eq(bean.getBitName()))
+                                .where(ProjectBeanDao.Properties.Name.eq(bean.getName()))
+                                .build()
+                                .list();
+                        if (list.size() == 0){
+                            daoSession.getProjectBeanDao().insert(bean);
+                        }
+
+                        //插入数据库 信息表
+                        CheckDataBean dataBean = new CheckDataBean();
+                        dataBean.setBitName(MainActivity.bitProject);
+                        dataBean.setType(row1.getCell(0).toString()+"");
+                        dataBean.setProjectName(row1.getCell(1).toString()+"");
+                        dataBean.setStandard(row1.getCell(2).toString()+"");
+                        dataBean.setUnit(row1.getCell(3).toString()+"");
+                        dataBean.setPlanNum(row1.getCell(4).toString()+"");
+                        daoSession.getCheckDataBeanDao().insert(dataBean);
+
                     } catch (Exception e) {
-                        map.put(row.getCell(j).toString(), "");
-                        LogUtills.e("字段值", row.getCell(j).toString() + "======");
+                        LogUtills.e("字段值",e.toString());
                     }
-                }
+
                 pInfos.add(map);
             }
         } catch (FileNotFoundException e) {

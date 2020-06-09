@@ -11,11 +11,11 @@ public class FileEntity {
     public enum Type{
         FLODER,FILE
     }
-    private String filePath; //文件路径
-    private String fileName; //文件名
-    private String fileSize; //文件长度
-    private Type fileType; //文件类型
-    private boolean isCheck; //是否被选中
+    public String filePath; //文件路径
+    public String fileName; //文件名
+    public String fileSize; //文件长度
+    public Type fileType; //文件类型
+    public boolean isCheck; //是否被选中
 
     public boolean isCheck() {
         return isCheck;

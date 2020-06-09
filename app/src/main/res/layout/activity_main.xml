@@ -15,17 +15,15 @@
         android:orientation="horizontal">
 
 
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
+        <Spinner
+            android:layout_centerVertical="true"
+            android:id="@+id/spType"
+            android:layout_width="120dp"
             android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:gravity="center"
-            android:text="采集项目"
-            android:textColor="@color/cardview_light_background" />
+            android:spinnerMode="dialog" />
 
         <Spinner
-            android:layout_toRightOf="@id/tvTitle"
+            android:layout_toRightOf="@id/spType"
             android:layout_centerInParent="true"
             android:id="@+id/spProject"
             android:layout_width="match_parent"
@@ -77,8 +75,374 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-
+        <ImageButton
+            android:layout_marginTop="20dp"
+            android:background="@mipmap/ic_map_picture"
+            android:id="@+id/pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
+
+    <LinearLayout
+        android:background="@color/blue06"
+        android:layout_below="@id/layout"
+        android:orientation="vertical"
+        android:id="@+id/layout0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="规格指标"
+                style="@style/tvStyle"/>
+
+            <TextView
+                android:text="单位"
+                style="@style/tvStyle2"/>
+
+            <TextView
+                android:text="上报量"
+                style="@style/tvStyle3"/>
+            <TextView
+                android:text="第一次"
+                style="@style/tvStyle"/>
+            <TextView
+                android:text="第二次"
+                style="@style/tvStyle"/>
+            <TextView
+                android:text="第三次"
+                style="@style/tvStyle"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/layout1"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv11"
+                style="@style/tvStyle"/>
+
+            <TextView
+                android:id="@+id/tv12"
+                style="@style/tvStyle2"/>
+
+            <TextView
+                android:id="@+id/tv13"
+                style="@style/tvStyle3"/>
+            <EditText
+                android:id="@+id/tv14"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv15"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv16"
+                style="@style/tvStyle"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/layout2"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv21"
+
+                style="@style/tvStyle"/>
+
+            <TextView
+                android:id="@+id/tv22"
+
+                style="@style/tvStyle2"/>
+
+            <TextView
+                android:id="@+id/tv23"
+
+                style="@style/tvStyle3"/>
+            <EditText
+                android:id="@+id/tv24"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv25"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv26"
+                style="@style/tvStyle"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/layout3"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv31"
+
+                style="@style/tvStyle"/>
+
+            <TextView
+                android:id="@+id/tv32"
+
+                style="@style/tvStyle2"/>
+
+            <TextView
+                android:id="@+id/tv33"
+
+                style="@style/tvStyle3"/>
+
+            <EditText
+                android:id="@+id/tv34"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv35"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv36"
+                style="@style/tvStyle"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/layout4"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv41"
+
+                style="@style/tvStyle"/>
+
+            <TextView
+                android:id="@+id/tv42"
+
+                style="@style/tvStyle2"/>
+
+            <TextView
+                android:id="@+id/tv43"
+
+                style="@style/tvStyle3"/>
+            <EditText
+                android:id="@+id/tv44"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv45"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv46"
+                style="@style/tvStyle"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/layout5"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv51"
+
+                style="@style/tvStyle"/>
+
+            <TextView
+                android:id="@+id/tv52"
+
+                style="@style/tvStyle2"/>
+
+            <TextView
+                android:id="@+id/tv53"
+
+                style="@style/tvStyle3"/>
+
+            <EditText
+                android:id="@+id/tv54"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv55"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv56"
+                style="@style/tvStyle"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/layout6"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv61"
+
+                style="@style/tvStyle"/>
+
+            <TextView
+                android:id="@+id/tv62"
+
+                style="@style/tvStyle2"/>
+
+            <TextView
+                android:id="@+id/tv63"
+
+                style="@style/tvStyle3"/>
+
+            <EditText
+                android:id="@+id/tv64"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv65"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv66"
+                style="@style/tvStyle"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/layout7"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv71"
+
+                style="@style/tvStyle"/>
+
+            <TextView
+                android:id="@+id/tv72"
+
+                style="@style/tvStyle2"/>
+
+            <TextView
+                android:id="@+id/tv73"
+
+                style="@style/tvStyle3"/>
+
+            <EditText
+                android:id="@+id/tv74"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv75"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv76"
+                style="@style/tvStyle"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/layout8"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv81"
+
+                style="@style/tvStyle"/>
+
+            <TextView
+                android:id="@+id/tv82"
+
+                style="@style/tvStyle2"/>
+
+            <TextView
+                android:id="@+id/tv83"
+
+                style="@style/tvStyle3"/>
+
+            <EditText
+                android:id="@+id/tv84"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv85"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv86"
+                style="@style/tvStyle"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/layout9"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv91"
+
+                style="@style/tvStyle"/>
+
+            <TextView
+                android:id="@+id/tv92"
+
+                style="@style/tvStyle2"/>
+
+            <TextView
+                android:id="@+id/tv93"
+
+                style="@style/tvStyle3"/>
+
+            <EditText
+                android:id="@+id/tv94"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv95"
+                style="@style/tvStyle"/>
+            <EditText
+                android:id="@+id/tv96"
+                style="@style/tvStyle"/>
+        </LinearLayout>
+
+
+    <LinearLayout
+        android:visibility="visible"
+        android:id="@+id/layout10"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:textColor="@color/white"
+            android:background="@drawable/login_btn"
+            android:text="保存"
+            android:id="@+id/btnSave"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"/>
+
+        <Button
+            android:textColor="@color/white"
+            android:background="@drawable/login_btn"
+            android:text="导出"
+            android:id="@+id/btnExport"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"/>
+    </LinearLayout>
+
+
+
+     </LinearLayout>
+
+    <Spinner
+        android:layout_alignParentBottom="true"
+        android:spinnerMode="dropdown"
+        android:id="@+id/spBitProject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>

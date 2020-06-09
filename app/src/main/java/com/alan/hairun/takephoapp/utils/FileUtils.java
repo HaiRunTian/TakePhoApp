@@ -338,7 +338,7 @@ public class FileUtils {
                     entity.setFileType(FileEntity.Type.FILE);
                     String s = _list.get(i).getName().toString();
 
-                    if (s.endsWith(".xls") || s.endsWith(".xlsx")){
+                    if (s.endsWith(".xls")){
                         list.add(entity);
                     }
                 }
@@ -387,7 +387,7 @@ public class FileUtils {
     }
 
     /**
-     * 获取里面有多少个文件夹
+     * 获取里面有多少个文件
      *
      * @param fileName
      * @return
@@ -398,7 +398,27 @@ public class FileUtils {
             File file = new File(fileName);
             File[] files = file.listFiles();
             for (int _i = 0; _i < files.length; _i++) {
-                if (files[_i].isFile()) {
+                if (files[_i].isFile() && files[_i].getName().endsWith(".jpg")) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * 获取里面有多少个文件夹
+     *
+     * @param fileName
+     * @return
+     */
+    public int getFoldeCount(String fileName) {
+        int count = 0;
+        if (isDirExsit(fileName)) {
+            File file = new File(fileName);
+            File[] files = file.listFiles();
+            for (int _i = 0; _i < files.length; _i++) {
+                if (files[_i].isDirectory()) {
                     count++;
                 }
             }

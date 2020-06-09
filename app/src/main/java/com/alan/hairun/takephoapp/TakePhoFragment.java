@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 /**
  * @author: Alan
@@ -78,6 +82,8 @@ public class TakePhoFragment extends DialogFragment implements View.OnClickListe
      */
     private SimpleAdapter simpleAdapter;
     private TextView tvPath;
+    private double x;
+    private double y;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,9 +99,9 @@ public class TakePhoFragment extends DialogFragment implements View.OnClickListe
         gridView = view.findViewById(R.id.gridView);
         btnAdd = view.findViewById(R.id.btnAddPic);
         tvPath = view.findViewById(R.id.tvText);
-
         return view;
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -111,7 +117,9 @@ public class TakePhoFragment extends DialogFragment implements View.OnClickListe
         father = bundle.getString("father");
         //工程文件里的子文件夹 存照片
         child = bundle.getString("child");
-        String s = father.substring(father.lastIndexOf("拍"));
+        x = bundle.getDouble("x");
+        y = bundle.getDouble("y");
+        String s = father.substring(father.indexOf("照"));
 
         tvPath.setText("照片目录：" + s + "/" + child + "/");
     }
@@ -125,7 +133,8 @@ public class TakePhoFragment extends DialogFragment implements View.OnClickListe
     @Override
     public void onStart() {
         super.onStart();
-        InitWindowSize.ins().initWindowSize(getActivity(), getDialog(), 0.9, 0.8);
+        InitWindowSize.ins().initWindowSize(getActivity(), getDialog());
+
     }
 
     @Override
@@ -152,7 +161,7 @@ public class TakePhoFragment extends DialogFragment implements View.OnClickListe
         }
         m_picIndex++;
         //照片名字
-        String name = father + "/" + child + "/" + DateTimeUtil.getCurrentDateFromFormat(DateTimeUtil.DATE_FORMAT_YYYYMMDD_HHMMSS) +"_"+ m_picIndex+ ".jpg";
+        String name = father + "/" + child + "/" + DateTimeUtil.getCurrentDateFromFormat(DateTimeUtil.DATE_FORMAT_YYYYMMDD_HHMMSS) + "_" + m_picIndex+"_("+ x +" : "+ y + ").jpg";
         m_pictureName = new File(name);
         m_pictureName.getParentFile().mkdirs();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -162,9 +171,11 @@ public class TakePhoFragment extends DialogFragment implements View.OnClickListe
             //步骤三：获取文件Uri
             fileUri = Uri.fromFile(m_pictureName);
         }
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivityForResult(intent, CameraUtils.PHOTO_REQUEST_TAKEPHOTO);
+
     }
 
     /**
@@ -191,6 +202,7 @@ public class TakePhoFragment extends DialogFragment implements View.OnClickListe
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         try {
+
             switch (requestCode) {
                 case CameraUtils.PHOTO_REQUEST_TAKEPHOTO:
                     picBitmap = BitmapFactory.decodeFile(m_pictureName.getAbsolutePath());
@@ -203,7 +215,7 @@ public class TakePhoFragment extends DialogFragment implements View.OnClickListe
                         HashMap<String, Object> _map = new HashMap<>();
                         _map.put("itemImage", picBitmap);
                         _map.put("picName", pictureName);
-                        imageItem.add(_map);
+                        imageItem.add(0,_map);
                         refreshGridviewAdapter();
                     } else {
                         Toast.makeText(getActivity(), "图片名不允许带特殊符号", Toast.LENGTH_SHORT).show();
@@ -307,5 +319,17 @@ public class TakePhoFragment extends DialogFragment implements View.OnClickListe
                     }
                 });
         return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
     }
 }

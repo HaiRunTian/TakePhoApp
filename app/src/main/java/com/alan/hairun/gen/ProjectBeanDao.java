@@ -25,8 +25,10 @@ public class ProjectBeanDao extends AbstractDao<ProjectBean, Long> {
      */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Name = new Property(1, String.class, "name", false, "NAME");
-        public final static Property Date = new Property(2, String.class, "date", false, "DATE");
+        public final static Property BitName = new Property(1, String.class, "bitName", false, "BIT_NAME");
+        public final static Property Type = new Property(2, String.class, "type", false, "TYPE");
+        public final static Property Name = new Property(3, String.class, "name", false, "NAME");
+        public final static Property Date = new Property(4, String.class, "date", false, "DATE");
     }
 
 
@@ -43,8 +45,10 @@ public class ProjectBeanDao extends AbstractDao<ProjectBean, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"PROJECT_BEAN\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
-                "\"NAME\" TEXT," + // 1: name
-                "\"DATE\" TEXT);"); // 2: date
+                "\"BIT_NAME\" TEXT," + // 1: bitName
+                "\"TYPE\" TEXT," + // 2: type
+                "\"NAME\" TEXT," + // 3: name
+                "\"DATE\" TEXT);"); // 4: date
     }
 
     /** Drops the underlying database table. */
@@ -62,14 +66,24 @@ public class ProjectBeanDao extends AbstractDao<ProjectBean, Long> {
             stmt.bindLong(1, id);
         }
  
+        String bitName = entity.getBitName();
+        if (bitName != null) {
+            stmt.bindString(2, bitName);
+        }
+ 
+        String type = entity.getType();
+        if (type != null) {
+            stmt.bindString(3, type);
+        }
+ 
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(2, name);
+            stmt.bindString(4, name);
         }
  
         String date = entity.getDate();
         if (date != null) {
-            stmt.bindString(3, date);
+            stmt.bindString(5, date);
         }
     }
 
@@ -82,14 +96,24 @@ public class ProjectBeanDao extends AbstractDao<ProjectBean, Long> {
             stmt.bindLong(1, id);
         }
  
+        String bitName = entity.getBitName();
+        if (bitName != null) {
+            stmt.bindString(2, bitName);
+        }
+ 
+        String type = entity.getType();
+        if (type != null) {
+            stmt.bindString(3, type);
+        }
+ 
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(2, name);
+            stmt.bindString(4, name);
         }
  
         String date = entity.getDate();
         if (date != null) {
-            stmt.bindString(3, date);
+            stmt.bindString(5, date);
         }
     }
 
@@ -102,8 +126,10 @@ public class ProjectBeanDao extends AbstractDao<ProjectBean, Long> {
     public ProjectBean readEntity(Cursor cursor, int offset) {
         ProjectBean entity = new ProjectBean( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // date
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // bitName
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // type
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // name
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4) // date
         );
         return entity;
     }
@@ -111,8 +137,10 @@ public class ProjectBeanDao extends AbstractDao<ProjectBean, Long> {
     @Override
     public void readEntity(Cursor cursor, ProjectBean entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setDate(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setBitName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setType(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setName(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setDate(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
      }
     
     @Override

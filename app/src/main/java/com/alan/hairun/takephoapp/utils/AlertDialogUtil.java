@@ -57,7 +57,7 @@ public class AlertDialogUtil {
     }
 
 
-    public static AlertDialog showDialog(Context context, String title, String msg,boolean cancelable, DialogInterface.OnClickListener onClickListener, DialogInterface.OnClickListener onClickListener2 ) {
+    public static AlertDialog showDialog(Context context, String title, String msg,boolean cancelable, DialogInterface.OnClickListener onClickListener, DialogInterface.OnClickListener onClickListener2 , DialogInterface.OnClickListener onClickListener3) {
         AlertDialog _dialog = new AlertDialog
                 .Builder(context)
                 .setIcon(R.mipmap.ic_import)
@@ -65,7 +65,8 @@ public class AlertDialogUtil {
                 .setMessage(msg)
                 .setCancelable(cancelable)
                 .setPositiveButton("QQ",onClickListener)
-                .setNeutralButton("微信",onClickListener2)
+                .setNeutralButton("返回",onClickListener2)
+                .setNegativeButton("微信",onClickListener3)
                 .create();
         _dialog.show();
         return _dialog;

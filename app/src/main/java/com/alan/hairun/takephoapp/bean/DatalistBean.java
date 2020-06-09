@@ -13,16 +13,18 @@ import org.greenrobot.greendao.annotation.Generated;
 @Entity
 public class DatalistBean {
     @Id(autoincrement = true)
-    private Long id;
-    private String name;
-    private String picture;
-    private String date;
-    private double lng;
-    private double lat;
-    @Generated(hash = 2056055858)
-    public DatalistBean(Long id, String name, String picture, String date,
-            double lng, double lat) {
+    public Long id;
+    public String bitName;
+    public String name;
+    public String picture;
+    public String date;
+    public double lng;
+    public double lat;
+    @Generated(hash = 31356846)
+    public DatalistBean(Long id, String bitName, String name, String picture,
+            String date, double lng, double lat) {
         this.id = id;
+        this.bitName = bitName;
         this.name = name;
         this.picture = picture;
         this.date = date;
@@ -67,5 +69,11 @@ public class DatalistBean {
     }
     public void setLat(double lat) {
         this.lat = lat;
+    }
+    public String getBitName() {
+        return this.bitName;
+    }
+    public void setBitName(String bitName) {
+        this.bitName = bitName;
     }
 }

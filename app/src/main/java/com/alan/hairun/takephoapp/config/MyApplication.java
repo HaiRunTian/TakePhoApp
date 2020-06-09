@@ -3,10 +3,17 @@ package com.alan.hairun.takephoapp.config;
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
 
+import androidx.annotation.NonNull;
+import androidx.multidex.MultiDex;
+
 import com.alan.hairun.gen.DaoMaster;
 import com.alan.hairun.gen.DaoSession;
+import com.alan.hairun.takephoapp.R;
 import com.baidu.mapapi.CoordType;
 import com.baidu.mapapi.SDKInitializer;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 /**
  * @author: Alan
@@ -14,7 +21,7 @@ import com.baidu.mapapi.SDKInitializer;
  * @time: 下午 11:29
  * @deprecated:
  */
-public class MyApplication extends Application {
+public class MyApplication extends Application{
 
     private static MyApplication INSTANT = null;
     private static DaoSession daoSession;
@@ -30,6 +37,8 @@ public class MyApplication extends Application {
         //自4.3.0起，百度地图SDK所有接口均支持百度坐标和国测局坐标，用此方法设置您使用的坐标类型.
         //包括BD09LL和GCJ02两种坐标，默认是BD09LL坐标。
         SDKInitializer.setCoordType(CoordType.GCJ02);
+        MultiDex.install(this);
+
     }
 
 

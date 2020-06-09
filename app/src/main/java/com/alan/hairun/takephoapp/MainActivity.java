@@ -1,14 +1,10 @@
 package com.alan.hairun.takephoapp;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -20,26 +16,37 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.alan.hairun.gen.CheckDataBeanDao;
 import com.alan.hairun.gen.DaoSession;
 import com.alan.hairun.gen.ProjectBeanDao;
-import com.alan.hairun.takephoapp.adapter.SpinnerAdapter;
+import com.alan.hairun.gen.ProjectBitBeanDao;
+import com.alan.hairun.takephoapp.bean.CheckDataBean;
 import com.alan.hairun.takephoapp.bean.ProjectBean;
+import com.alan.hairun.takephoapp.bean.ProjectBitBean;
 import com.alan.hairun.takephoapp.config.MyApplication;
 import com.alan.hairun.takephoapp.utils.AlertDialogUtil;
 import com.alan.hairun.takephoapp.utils.DateTimeUtil;
+import com.alan.hairun.takephoapp.utils.ExcelUtilsOfPoi;
 import com.alan.hairun.takephoapp.utils.FileUtils;
+import com.alan.hairun.takephoapp.utils.GpsUtils;
 import com.alan.hairun.takephoapp.utils.ImportDataProgressUtil;
+import com.alan.hairun.takephoapp.utils.LogUtills;
 import com.alan.hairun.takephoapp.utils.SelectExcelActivity;
+import com.alan.hairun.takephoapp.utils.SpinnerDropdownListManager;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BaiduMapOptions;
-import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
@@ -47,34 +54,173 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
 
-import org.apache.poi.hssf.util.HSSFColor;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity {
 
+    @BindView(R.id.tv11)
+    TextView tv11;
+    @BindView(R.id.tv12)
+    TextView tv12;
+    @BindView(R.id.tv13)
+    TextView tv13;
+    @BindView(R.id.tv21)
+    TextView tv21;
+    @BindView(R.id.tv22)
+    TextView tv22;
+    @BindView(R.id.tv23)
+    TextView tv23;
+    @BindView(R.id.tv31)
+    TextView tv31;
+    @BindView(R.id.tv32)
+    TextView tv32;
+    @BindView(R.id.tv33)
+    TextView tv33;
+    @BindView(R.id.tv41)
+    TextView tv41;
+    @BindView(R.id.tv42)
+    TextView tv42;
+    @BindView(R.id.tv43)
+    TextView tv43;
+    @BindView(R.id.tv51)
+    TextView tv51;
+    @BindView(R.id.tv52)
+    TextView tv52;
+    @BindView(R.id.tv53)
+    TextView tv53;
+    @BindView(R.id.layout3)
+    LinearLayout layout3;
+    @BindView(R.id.spBitProject)
+    Spinner spBitProject;
+    @BindView(R.id.tv14)
+    EditText tv14;
+    @BindView(R.id.tv15)
+    EditText tv15;
+    @BindView(R.id.tv16)
+    EditText tv16;
+    @BindView(R.id.layout1)
+    LinearLayout layout1;
+    @BindView(R.id.tv24)
+    EditText tv24;
+    @BindView(R.id.tv25)
+    EditText tv25;
+    @BindView(R.id.tv26)
+    EditText tv26;
+    @BindView(R.id.layout2)
+    LinearLayout layout2;
+    @BindView(R.id.tv34)
+    EditText tv34;
+    @BindView(R.id.tv35)
+    EditText tv35;
+    @BindView(R.id.tv36)
+    EditText tv36;
+    @BindView(R.id.tv44)
+    EditText tv44;
+    @BindView(R.id.tv45)
+    EditText tv45;
+    @BindView(R.id.tv46)
+    EditText tv46;
+    @BindView(R.id.layout4)
+    LinearLayout layout4;
+    @BindView(R.id.tv54)
+    EditText tv54;
+    @BindView(R.id.tv55)
+    EditText tv55;
+    @BindView(R.id.tv56)
+    EditText tv56;
+    @BindView(R.id.layout5)
+    LinearLayout layout5;
+    @BindView(R.id.tv61)
+    TextView tv61;
+    @BindView(R.id.tv62)
+    TextView tv62;
+    @BindView(R.id.tv63)
+    TextView tv63;
+    @BindView(R.id.tv64)
+    EditText tv64;
+    @BindView(R.id.tv65)
+    EditText tv65;
+    @BindView(R.id.tv66)
+    EditText tv66;
+    @BindView(R.id.layout6)
+    LinearLayout layout6;
+    @BindView(R.id.tv71)
+    TextView tv71;
+    @BindView(R.id.tv72)
+    TextView tv72;
+    @BindView(R.id.tv73)
+    TextView tv73;
+    @BindView(R.id.tv74)
+    EditText tv74;
+    @BindView(R.id.tv75)
+    EditText tv75;
+    @BindView(R.id.tv76)
+    EditText tv76;
+    @BindView(R.id.layout7)
+    LinearLayout layout7;
+    @BindView(R.id.tv81)
+    TextView tv81;
+    @BindView(R.id.tv82)
+    TextView tv82;
+    @BindView(R.id.tv83)
+    TextView tv83;
+    @BindView(R.id.tv84)
+    EditText tv84;
+    @BindView(R.id.tv85)
+    EditText tv85;
+    @BindView(R.id.tv86)
+    EditText tv86;
+    @BindView(R.id.layout8)
+    LinearLayout layout8;
+    @BindView(R.id.tv91)
+    TextView tv91;
+    @BindView(R.id.tv92)
+    TextView tv92;
+    @BindView(R.id.tv93)
+    TextView tv93;
+    @BindView(R.id.tv94)
+    EditText tv94;
+    @BindView(R.id.tv95)
+    EditText tv95;
+    @BindView(R.id.tv96)
+    EditText tv96;
+    @BindView(R.id.layout9)
+    LinearLayout layout9;
+    @BindView(R.id.spType)
+    Spinner spType;
+    @BindView(R.id.btnSave)
+    Button btnSave;
+    @BindView(R.id.btnExport)
+    Button btnExport;
     private Spinner spProject;
     private ImageButton btnAdd;
+    private List<String> projectlist;
     private List<String> list;
+    private List<String> listType;
     private String projectName = "";
     private DaoSession daoSession;
-    public static String SD = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-    private String APP_PAHT = "/拍照采集系统";
+    public static String SD = Environment.getExternalStorageDirectory().getAbsolutePath();
+    private String APP_PAHT = "/0照片采集系统";
     private String PICTURE = "/照片";
+    private ArrayAdapter adapter;
+    private ArrayAdapter adapterType;
     private ArrayAdapter arrayAdapter;
-    private ImageButton btnDel;
+    private ImageButton btnDel, imgBtnSeekPic;
     private MapView mMapView;
     private BaiduMap mBaiduMap;
     private LocationClient mLocationClient;
     public static final String QQ_FILE_PATH = SD + "/Android/data/com.tencent.mobileqq/Tencent/QQfile_recv";
-    public  static  final String WECHAT_FILE_PATH = SD + "/tencent/MicroMsg/Download";
+    public static final String WECHAT_FILE_PATH = SD + "/tencent/MicroMsg/Download";
     public static String FATH = "";
     private ProgressDialog m_progress;
     private String m_filePath;
     private String m_fileName;
     private int[] array = new int[1];
+    public static String bitProject = "";
     @SuppressLint("HandlerLeak")
     private Handler m_handler = new Handler() {
         @Override
@@ -116,8 +262,12 @@ public class MainActivity extends AppCompatActivity {
                 case 6:
                     //数据导入成功
                     m_progress.setMessage("数据导入成功！");
+                    listType.addAll(queryProjectType());
+                    adapterType.notifyDataSetChanged();
+                    spType.setSelection(0);
                     list.addAll(queryProjectList());
                     arrayAdapter.notifyDataSetChanged();
+                    spBitProject.setSelection(0);
                     m_progress.dismiss();
                     break;
                 case 7:
@@ -134,10 +284,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    private double x;
+    private double y;
+    private int count;
+    private List<CheckDataBean> checkDataBeans;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         createFolder(SD + APP_PAHT);
         initView();
         initData();
@@ -148,32 +304,37 @@ public class MainActivity extends AppCompatActivity {
 
     private void initLocal() {
         try {
-        //定位初始化
-                     mBaiduMap = mMapView.getMap();
+            //定位初始化
+            mBaiduMap = mMapView.getMap();
             //开启定位图层
-                      mBaiduMap.setMyLocationEnabled(true);
-                    mLocationClient = new LocationClient(MainActivity.this);
-                    //通过LocationClientOption设置LocationClient相关参数
-                    LocationClientOption option = new LocationClientOption();
-                    option.setOpenGps(true); // 打开gps
-                    option.setCoorType("gcj02"); // 设置坐标类型
-                    option.setScanSpan(1000);
+            mBaiduMap.setMyLocationEnabled(true);
+            mLocationClient = new LocationClient(MainActivity.this);
+            //通过LocationClientOption设置LocationClient相关参数
+            LocationClientOption option = new LocationClientOption();
+            option.setOpenGps(true); // 打开gps
+            option.setCoorType("gcj02"); // 设置坐标类型
+            option.setScanSpan(1000);
 
-                    //设置locationClientOption
-                    mLocationClient.setLocOption(option);
-                    //注册LocationListener监听器
-                    MyLocationListener myLocationListener = new MyLocationListener();
-                    mLocationClient.registerLocationListener(myLocationListener);
-                    //开启地图定位图层
-                    mLocationClient.start();
+            //设置locationClientOption
+            mLocationClient.setLocOption(option);
+            //注册LocationListener监听器
+            MyLocationListener myLocationListener = new MyLocationListener();
+            mLocationClient.registerLocationListener(myLocationListener);
+            //开启地图定位图层
+            mLocationClient.start();
             MyLocationConfiguration locationConfiguration = new MyLocationConfiguration(MyLocationConfiguration.LocationMode.FOLLOWING,
-                    true,BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+                    true, BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
             mBaiduMap.setMyLocationConfiguration(locationConfiguration);
             MapStatus.Builder builder = new MapStatus.Builder();
             builder.zoom(20.0f);
             mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
-        }catch (Exception e){
-            Log.e("main","定位error;" + e.toString());
+
+            if (!GpsUtils.isOPen(MainActivity.this)) {
+                Toast.makeText(MainActivity.this, "请先打开GPS定位功能", Toast.LENGTH_LONG).show();
+                GpsUtils.openGPS(MainActivity.this);
+            }
+        } catch (Exception e) {
+            Log.e("main", "定位error;" + e.toString());
         }
 
     }
@@ -195,24 +356,457 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        list = queryProjectList();
-        arrayAdapter = new ArrayAdapter(this, R.layout.text_layout, list);
+        daoSession = MyApplication.getINSTANT().getDaoSession();
+        List<ProjectBitBean> list = daoSession.getProjectBitBeanDao().queryBuilder().where(ProjectBitBeanDao.Properties.Remark.eq("1")).list();
+        String name = "";
+        for (int i = 0; i < list.size(); i++) {
+            name = list.get(i).prjName;
+        }
+        projectlist = queryProjectList1();
+        adapter = new ArrayAdapter(this, R.layout.item_spinner, projectlist);
+        spBitProject.setAdapter(adapter);
+        SpinnerDropdownListManager.setSpinnerItemSelectedByValue(spBitProject, name);
+        bitProject = spBitProject.getSelectedItem() != null ? spBitProject.getSelectedItem().toString() : "";
+
+        listType = queryProjectType();
+        adapterType = new ArrayAdapter(this, R.layout.text_layout, listType);
+        spType.setAdapter(adapterType);
+        spType.setSelection(0);
+
+        this.list = queryProjectList();
+        arrayAdapter = new ArrayAdapter(this, R.layout.text_layout, this.list);
         spProject.setAdapter(arrayAdapter);
+        spProject.setSelection(0);
+    }
+
+
+    private List<String> queryProjectList1() {
+        List<ProjectBitBean> projectBeans = daoSession.getProjectBitBeanDao().queryBuilder()
+                .orderDesc(ProjectBitBeanDao.Properties.Id)
+                .list();
+        List<String> list = new ArrayList<>();
+
+        for (int i = 0; i < projectBeans.size(); i++) {
+            list.add(projectBeans.get(i).getPrjName());
+            //穿件文件
+            FileUtils.getInstance().mkdirs(SD + APP_PAHT + "/" + projectBeans.get(i).getPrjName());
+
+        }
+
+        return list;
+    }
+
+    private List<String> queryProjectType() {
+        List<String> list2 = new ArrayList<>();
+        String sql = "SELECT DISTINCT " + ProjectBeanDao.Properties.Type.columnName + " FROM "
+                + ProjectBeanDao.TABLENAME + " where " + ProjectBeanDao.Properties.BitName.columnName + " = '" + bitProject + "'";
+        LogUtills.i(sql);
+        Cursor cursor = daoSession.getDatabase().rawQuery(sql, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    list2.add(cursor.getString(0));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            cursor.close();
+        }
+        return list2;
     }
 
     private List<String> queryProjectList() {
-        daoSession = MyApplication.getINSTANT().getDaoSession();
-        List<ProjectBean> projectBeans = daoSession.getProjectBeanDao().queryBuilder().orderDesc(ProjectBeanDao.Properties.Id).list();
+        String type = spType.getSelectedItem() != null ? spType.getSelectedItem().toString() : "";
+
+        List<ProjectBean> projectBeans = daoSession.getProjectBeanDao()
+                .queryBuilder()
+                .where(ProjectBeanDao.Properties.BitName.eq(bitProject))
+                .where(ProjectBeanDao.Properties.Type.eq(type))
+                .orderDesc(ProjectBeanDao.Properties.Id)
+                .list();
         List<String> list = new ArrayList<>();
         for (int i = 0; i < projectBeans.size(); i++) {
             list.add(projectBeans.get(i).getName());
-            FileUtils.getInstance().mkdirs(SD + APP_PAHT + "/"+ projectBeans.get(i).getName());
         }
 
         return list;
     }
 
     private void intEvent() {
+
+        spBitProject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //创建此文件夹即可
+                bitProject = spBitProject.getSelectedItem().toString();
+                String path = SD + APP_PAHT + "/" + bitProject + PICTURE;
+                //q清空view
+              /*  clearView();
+                setViewGone();*/
+                listType.clear();
+                List<String> list2 = new ArrayList<>();
+                list2.add("");
+                String sql = "SELECT DISTINCT " + ProjectBeanDao.Properties.Type.columnName + " FROM "
+                        + ProjectBeanDao.TABLENAME + " where " + ProjectBeanDao.Properties.BitName.columnName + " = '" + bitProject + "'";
+                LogUtills.i(sql);
+                Cursor cursor = daoSession.getDatabase().rawQuery(sql, null);
+                try {
+                    if (cursor.moveToFirst()) {
+                        do {
+                            list2.add(cursor.getString(0));
+                        } while (cursor.moveToNext());
+                    }
+                } finally {
+                    cursor.close();
+                }
+              /*  list.clear();
+                arrayAdapter.notifyDataSetChanged();
+
+                clearView();*/
+                setViewGone();
+                listType.addAll(list2);
+                adapterType.notifyDataSetChanged();
+                spType.setSelection(0);
+
+                //设置标记  下次打开此项目
+                String sql2 = "update " + ProjectBitBeanDao.TABLENAME + " set " + ProjectBitBeanDao.Properties.Remark.columnName + " = '0'";
+                daoSession.getDatabase().execSQL(sql2);
+
+                String sql3 = "update " + ProjectBitBeanDao.TABLENAME + " set " + ProjectBitBeanDao.Properties.Remark.columnName
+                        + " = '1' where " + ProjectBitBeanDao.Properties.PrjName.columnName + " = '" + bitProject + "'";
+                daoSession.getDatabase().execSQL(sql3);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+
+        spType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //刷新子项目adapter
+                String type = spType.getSelectedItem() != null ? spType.getSelectedItem().toString() : "";
+                list.clear();
+                List<ProjectBean> projectBeans = daoSession.getProjectBeanDao().queryBuilder()
+                        .where(ProjectBeanDao.Properties.BitName.eq(bitProject))
+                        .where(ProjectBeanDao.Properties.Type.eq(type))
+                        .orderDesc(ProjectBeanDao.Properties.Id).list();
+                List<String> list1 = new ArrayList<>();
+                list1.add("");
+                for (int i = 0; i < projectBeans.size(); i++) {
+                    list1.add(projectBeans.get(i).getName());
+
+                }
+                list.addAll(list1);
+                setViewGone();
+                arrayAdapter.notifyDataSetChanged();
+                spProject.setSelection(0);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                arrayAdapter.notifyDataSetChanged();
+            }
+        });
+
+
+        spProject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if (bitProject.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "你还没创建项目", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                //每次选中项目 判断这个项目三个文件夹里是否有照片
+                projectName = spProject.getSelectedItem().toString();
+                String path = SD + APP_PAHT + "/" + bitProject + "/" + projectName + PICTURE;
+                //创建此项目文件夹
+//                FileUtils.getInstance().mkdirs(path);
+                int folderCount = FileUtils.getInstance().getFoldeCount(path);
+                StringBuffer sb = new StringBuffer();
+                for (int i = 0; i < folderCount; i++) {
+                    int j = i + 1;
+                    String img1 = path + "/" + j;
+                    int fileCount1 = FileUtils.getInstance().getFileCount(img1);
+                    sb.append("文件" + j + "照片：" + fileCount1 + "张；");
+                }
+
+                Toast.makeText(MainActivity.this, sb.toString(), Toast.LENGTH_SHORT).show();
+                setVialueToVIew(projectName);
+
+            }
+
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                arrayAdapter.notifyDataSetChanged();
+            }
+        });
+
+        //保存数据
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+
+                    if (count > 0) {
+                        CheckDataBean dataBean = checkDataBeans.get(0);
+                        dataBean.setOne(tv14.getText().toString() + "");
+                        dataBean.setTwo(tv15.getText().toString() + "");
+                        dataBean.setThree(tv16.getText().toString() + "");
+                        daoSession.getCheckDataBeanDao().update(dataBean);
+
+                    }
+
+                    if (count > 1) {
+                        CheckDataBean dataBean = checkDataBeans.get(1);
+                        dataBean.setOne(tv24.getText().toString() + "");
+                        dataBean.setTwo(tv25.getText().toString() + "");
+                        dataBean.setThree(tv26.getText().toString() + "");
+                        daoSession.getCheckDataBeanDao().update(dataBean);
+                    }
+
+                    if (count > 2) {
+                        CheckDataBean dataBean = checkDataBeans.get(2);
+                        dataBean.setOne(tv34.getText().toString() + "");
+                        dataBean.setTwo(tv35.getText().toString() + "");
+                        dataBean.setThree(tv36.getText().toString() + "");
+                        daoSession.getCheckDataBeanDao().update(dataBean);
+                    }
+
+                    if (count > 3) {
+                        CheckDataBean dataBean = checkDataBeans.get(3);
+                        dataBean.setOne(tv44.getText().toString() + "");
+                        dataBean.setTwo(tv45.getText().toString() + "");
+                        dataBean.setThree(tv46.getText().toString() + "");
+                        daoSession.getCheckDataBeanDao().update(dataBean);
+                    }
+
+                    if (count > 4) {
+                        CheckDataBean dataBean = checkDataBeans.get(4);
+                        dataBean.setOne(tv54.getText().toString() + "");
+                        dataBean.setTwo(tv55.getText().toString() + "");
+                        dataBean.setThree(tv56.getText().toString() + "");
+                        daoSession.getCheckDataBeanDao().update(dataBean);
+                    }
+
+                    if (count > 5) {
+                        CheckDataBean dataBean = checkDataBeans.get(5);
+                        dataBean.setOne(tv64.getText().toString() + "");
+                        dataBean.setTwo(tv65.getText().toString() + "");
+                        dataBean.setThree(tv66.getText().toString() + "");
+                        daoSession.getCheckDataBeanDao().update(dataBean);
+                    }
+
+                    if (count > 6) {
+                        CheckDataBean dataBean = checkDataBeans.get(6);
+                        dataBean.setOne(tv74.getText().toString() + "");
+                        dataBean.setTwo(tv75.getText().toString() + "");
+                        dataBean.setThree(tv76.getText().toString() + "");
+                        daoSession.getCheckDataBeanDao().update(dataBean);
+                    }
+
+                    if (count > 7) {
+                        CheckDataBean dataBean = checkDataBeans.get(7);
+                        dataBean.setOne(tv84.getText().toString() + "");
+                        dataBean.setTwo(tv85.getText().toString() + "");
+                        dataBean.setThree(tv86.getText().toString() + "");
+                        daoSession.getCheckDataBeanDao().update(dataBean);
+                    }
+
+                    if (count > 8) {
+                        CheckDataBean dataBean = checkDataBeans.get(8);
+                        dataBean.setOne(tv94.getText().toString() + "");
+                        dataBean.setTwo(tv95.getText().toString() + "");
+                        dataBean.setThree(tv96.getText().toString() + "");
+                        daoSession.getCheckDataBeanDao().update(dataBean);
+                    }
+                    Toast.makeText(MainActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
+                }
+
+
+            }
+        });
+    }
+
+    private void clearView() {
+        tv11.setText("");
+        tv12.setText("");
+        tv13.setText("");
+        tv14.setText("");
+        tv15.setText("");
+        tv16.setText("");
+        tv21.setText("");
+        tv22.setText("");
+        tv23.setText("");
+        tv24.setText("");
+        tv25.setText("");
+        tv26.setText("");
+        tv31.setText("");
+        tv32.setText("");
+        tv33.setText("");
+        tv34.setText("");
+        tv35.setText("");
+        tv36.setText("");
+        tv41.setText("");
+        tv42.setText("");
+        tv43.setText("");
+        tv44.setText("");
+        tv45.setText("");
+        tv46.setText("");
+        tv51.setText("");
+        tv52.setText("");
+        tv53.setText("");
+        tv54.setText("");
+        tv55.setText("");
+        tv56.setText("");
+        tv61.setText("");
+        tv62.setText("");
+        tv63.setText("");
+        tv64.setText("");
+        tv65.setText("");
+        tv66.setText("");
+        tv71.setText("");
+        tv72.setText("");
+        tv73.setText("");
+        tv74.setText("");
+        tv75.setText("");
+        tv76.setText("");
+        tv81.setText("");
+        tv82.setText("");
+        tv83.setText("");
+        tv84.setText("");
+        tv85.setText("");
+        tv86.setText("");
+        tv91.setText("");
+        tv92.setText("");
+        tv93.setText("");
+        tv94.setText("");
+        tv95.setText("");
+        tv96.setText("");
+    }
+
+    private void setVialueToVIew(String projectName) {
+        checkDataBeans = MyApplication.getINSTANT().getDaoSession().getCheckDataBeanDao().queryBuilder()
+                .where(CheckDataBeanDao.Properties.BitName.eq(bitProject))
+                .where(CheckDataBeanDao.Properties.ProjectName.eq(projectName))
+                .build()
+                .list();
+        count = checkDataBeans.size();
+        if (checkDataBeans.size() > 0) {
+            layout1.setVisibility(View.VISIBLE);
+            tv11.setText(checkDataBeans.get(0).getStandard() + "");
+            tv12.setText(checkDataBeans.get(0).getUnit() + "");
+            tv13.setText(checkDataBeans.get(0).getPlanNum() + "");
+            tv14.setText(checkDataBeans.get(0).getOne() == null ? "" : checkDataBeans.get(0).getOne());
+            tv15.setText(checkDataBeans.get(0).getTwo() == null ? "" : checkDataBeans.get(0).getTwo());
+            tv16.setText(checkDataBeans.get(0).getThree() == null ? "" : checkDataBeans.get(0).getThree());
+        } else {
+            setViewGone();
+        }
+
+        if (checkDataBeans.size() > 1) {
+            layout2.setVisibility(View.VISIBLE);
+            tv21.setText(checkDataBeans.get(1).getStandard() + "");
+            tv22.setText(checkDataBeans.get(1).getUnit() + "");
+            tv23.setText(checkDataBeans.get(1).getPlanNum() + "");
+            tv24.setText(checkDataBeans.get(1).getOne() == null ? "" : checkDataBeans.get(1).getOne());
+            tv25.setText(checkDataBeans.get(1).getTwo() == null ? "" : checkDataBeans.get(1).getTwo());
+            tv26.setText(checkDataBeans.get(1).getThree() == null ? "" : checkDataBeans.get(1).getThree());
+        } else {
+            layout2.setVisibility(View.GONE);
+        }
+
+        if (checkDataBeans.size() > 2) {
+            layout3.setVisibility(View.VISIBLE);
+            tv31.setText(checkDataBeans.get(2).getStandard() + "");
+            tv32.setText(checkDataBeans.get(2).getUnit() + "");
+            tv33.setText(checkDataBeans.get(2).getPlanNum() + "");
+            tv34.setText(checkDataBeans.get(2).getOne() == null ? "" : checkDataBeans.get(2).getOne());
+            tv35.setText(checkDataBeans.get(2).getTwo() == null ? "" : checkDataBeans.get(2).getTwo());
+            tv36.setText(checkDataBeans.get(2).getThree() == null ? "" : checkDataBeans.get(2).getThree());
+        } else {
+            layout3.setVisibility(View.GONE);
+        }
+
+        if (checkDataBeans.size() > 3) {
+            layout4.setVisibility(View.VISIBLE);
+            tv41.setText(checkDataBeans.get(3).getStandard() + "");
+            tv42.setText(checkDataBeans.get(3).getUnit() + "");
+            tv43.setText(checkDataBeans.get(3).getPlanNum() + "");
+            tv44.setText(checkDataBeans.get(3).getOne() == null ? "" : checkDataBeans.get(3).getOne());
+            tv45.setText(checkDataBeans.get(3).getTwo() == null ? "" : checkDataBeans.get(3).getTwo());
+            tv46.setText(checkDataBeans.get(3).getThree() == null ? "" : checkDataBeans.get(3).getThree());
+        } else {
+            layout4.setVisibility(View.GONE);
+        }
+
+        if (checkDataBeans.size() > 4) {
+            layout5.setVisibility(View.VISIBLE);
+            tv51.setText(checkDataBeans.get(4).getStandard() + "");
+            tv52.setText(checkDataBeans.get(4).getUnit() + "");
+            tv53.setText(checkDataBeans.get(4).getPlanNum() + "");
+            tv54.setText(checkDataBeans.get(4).getOne() == null ? "" : checkDataBeans.get(4).getOne());
+            tv55.setText(checkDataBeans.get(4).getTwo() == null ? "" : checkDataBeans.get(4).getTwo());
+            tv56.setText(checkDataBeans.get(4).getThree() == null ? "" : checkDataBeans.get(4).getThree());
+        } else {
+            layout5.setVisibility(View.GONE);
+        }
+
+        if (checkDataBeans.size() > 5) {
+            layout6.setVisibility(View.VISIBLE);
+            tv61.setText(checkDataBeans.get(5).getStandard() + "");
+            tv62.setText(checkDataBeans.get(5).getUnit() + "");
+            tv63.setText(checkDataBeans.get(5).getPlanNum() + "");
+            tv64.setText(checkDataBeans.get(5).getOne() == null ? "" : checkDataBeans.get(5).getOne());
+            tv65.setText(checkDataBeans.get(5).getTwo() == null ? "" : checkDataBeans.get(5).getTwo());
+            tv66.setText(checkDataBeans.get(5).getThree() == null ? "" : checkDataBeans.get(5).getThree());
+        } else {
+            layout6.setVisibility(View.GONE);
+        }
+
+        if (checkDataBeans.size() > 6) {
+            layout7.setVisibility(View.VISIBLE);
+            tv71.setText(checkDataBeans.get(6).getStandard() + "");
+            tv72.setText(checkDataBeans.get(6).getUnit() + "");
+            tv73.setText(checkDataBeans.get(6).getPlanNum() + "");
+            tv74.setText(checkDataBeans.get(6).getOne() == null ? "" : checkDataBeans.get(6).getOne());
+            tv75.setText(checkDataBeans.get(6).getTwo() == null ? "" : checkDataBeans.get(6).getTwo());
+            tv76.setText(checkDataBeans.get(6).getThree() == null ? "" : checkDataBeans.get(6).getThree());
+        } else {
+            layout7.setVisibility(View.GONE);
+        }
+
+        if (checkDataBeans.size() > 7) {
+            layout8.setVisibility(View.VISIBLE);
+            tv81.setText(checkDataBeans.get(7).getStandard() + "");
+            tv82.setText(checkDataBeans.get(7).getUnit() + "");
+            tv83.setText(checkDataBeans.get(7).getPlanNum() + "");
+            tv84.setText(checkDataBeans.get(7).getOne() == null ? "" : checkDataBeans.get(7).getOne());
+            tv85.setText(checkDataBeans.get(7).getTwo() == null ? "" : checkDataBeans.get(7).getTwo());
+            tv86.setText(checkDataBeans.get(7).getThree() == null ? "" : checkDataBeans.get(7).getThree());
+        } else {
+            layout8.setVisibility(View.GONE);
+        }
+
+        if (checkDataBeans.size() > 8) {
+            layout9.setVisibility(View.VISIBLE);
+            tv91.setText(checkDataBeans.get(8).getStandard() + "");
+            tv92.setText(checkDataBeans.get(8).getUnit() + "");
+            tv93.setText(checkDataBeans.get(8).getPlanNum() + "");
+            tv94.setText(checkDataBeans.get(8).getOne() == null ? "" : checkDataBeans.get(8).getOne());
+            tv95.setText(checkDataBeans.get(8).getTwo() == null ? "" : checkDataBeans.get(8).getTwo());
+            tv96.setText(checkDataBeans.get(8).getThree() == null ? "" : checkDataBeans.get(8).getThree());
+        } else {
+            layout9.setVisibility(View.GONE);
+        }
+
 
     }
 
@@ -229,12 +823,31 @@ public class MainActivity extends AppCompatActivity {
         spProject = findViewById(R.id.spProject);
         btnAdd = findViewById(R.id.btnAdd);
         btnDel = findViewById(R.id.btnDeletet);
+        imgBtnSeekPic = findViewById(R.id.pic);
+
+        imgBtnSeekPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SeekPictureActivity.class);
+                // 图片url,为了演示这里使用常量，一般从数据库中或网络中获取
+                projectName = spProject.getSelectedItem().toString();
+                String path = SD + APP_PAHT + "/" + bitProject + "/" + projectName + PICTURE;
+                if (FileUtils.getInstance().getFoldeCount(path) != 0) {
+                    intent.putExtra("path", path);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(MainActivity.this, "此项目暂无照片", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+            }
+        });
+
         btnDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (list.size() == 0){
-
-                    Toast.makeText(MainActivity.this,"你还没创建项目，不能删除操作",Toast.LENGTH_LONG).show();
+                if (list.size() == 0) {
+                    Toast.makeText(MainActivity.this, "你还没创建项目，不能删除操作", Toast.LENGTH_LONG).show();
                     return;
                 }
                 showDeletDialog();
@@ -244,17 +857,20 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
         ImageButton btnAddImg = findViewById(R.id.btnAddPicture);
         btnAddImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (list.size() == 0){
-                    Toast.makeText(MainActivity.this,"你还没有创建项目，请先创建项目",Toast.LENGTH_LONG).show();
+                if (list.size() == 0) {
+                    Toast.makeText(MainActivity.this, "你还没有创建项目，请先创建项目", Toast.LENGTH_LONG).show();
                     return;
                 }
                 showDialog();
             }
         });
+
+
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -276,6 +892,17 @@ public class MainActivity extends AppCompatActivity {
         m_progress.setCanceledOnTouchOutside(false);
         m_progress.setIcon(R.mipmap.ic_file_excel);
         m_progress.setTitle("导入数据");
+
+        btnExport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<CheckDataBean> checkDataBeans = daoSession.getCheckDataBeanDao().queryBuilder()
+                        .where(CheckDataBeanDao.Properties.BitName.eq(bitProject)).list();
+                String path = SD + APP_PAHT + "/" + bitProject + "/" + DateTimeUtil.getCurrentDateFromFormat(DateTimeUtil.DATE_FORMAT_YYYYMMDD_HHMMSS) + ".xls";
+                ExcelUtilsOfPoi.initExcel(MainActivity.this,path,checkDataBeans);
+
+            }
+        });
     }
 
     private void importExcel() {
@@ -286,7 +913,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(new Intent(MainActivity.this, SelectExcelActivity.class), 1);
                 dialog.dismiss();
             }
-        },new DialogInterface.OnClickListener() {
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 FATH = WECHAT_FILE_PATH;
@@ -300,17 +932,24 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setIcon(R.mipmap.ic_question);
         builder.setTitle("删除提示");
-        builder.setMessage("确定删除该项目:"+spProject.getSelectedItem().toString()+"及相关照片吗？");
+        builder.setMessage("确定删除该项目:" + bitProject + "及相关照片吗？");
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                DaoSession daoSession = MyApplication.getINSTANT().getDaoSession();
-                daoSession.getProjectBeanDao().queryBuilder().where(ProjectBeanDao.Properties.Name.eq(spProject.getSelectedItem().toString()))
-                        .buildDelete().executeDeleteWithoutDetachingEntities();
-                FileUtils.getInstance().deleteDir(SD + APP_PAHT + "/" + spProject.getSelectedItem().toString());
-                list.remove(spProject.getSelectedItem().toString());
-                arrayAdapter.notifyDataSetChanged();
+                daoSession.getProjectBitBeanDao().queryBuilder()
+                        .where(ProjectBeanDao.Properties.BitName.eq(bitProject))
+                        .buildDelete()
+                        .executeDeleteWithoutDetachingEntities();
 
+                projectlist.remove(bitProject);
+                adapter.notifyDataSetChanged();
+/*
+                daoSession.getProjectBitBeanDao().queryBuilder().where(ProjectBitBeanDao.Properties.PrjName.eq(bitProject))
+                        .buildDelete().executeDeleteWithoutDetachingEntities();
+                projectlist.remove(bitProject);
+                adapter.notifyDataSetChanged();*/
+
+//                FileUtils.getInstance().deleteDir(SD + APP_PAHT + "/" + bitProject + "/" + spProject.getSelectedItem().toString());
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -333,20 +972,22 @@ public class MainActivity extends AppCompatActivity {
     private void showDialog() {
         projectName = spProject.getSelectedItem().toString();
         //获取当前目录有多少个子文件夹最大名称号
-        int fileIndexMax = FileUtils.getInstance().getFileIndexMax(SD + APP_PAHT + "/" + projectName + PICTURE);
+        int fileIndexMax = FileUtils.getInstance().getFileIndexMax(SD + APP_PAHT + "/" + bitProject + "/" + projectName + PICTURE);
         fileIndexMax++;
         //创建文件夹爱
-        FileUtils.getInstance().mkdirs(SD + APP_PAHT + "/" + projectName + PICTURE + "/" + fileIndexMax);
+        FileUtils.getInstance().mkdirs(SD + APP_PAHT + "/" + bitProject + "/" + projectName + PICTURE + "/" + fileIndexMax);
         TakePhoFragment fragment = new TakePhoFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("father", SD + APP_PAHT + "/" + projectName + PICTURE);
+        bundle.putString("father", SD + APP_PAHT + "/" + bitProject + "/" + projectName + PICTURE);
         bundle.putString("child", String.valueOf(fileIndexMax));
+        bundle.putDouble("x", x);
+        bundle.putDouble("y", y);
         fragment.setArguments(bundle);
-        fragment.show(getSupportFragmentManager().beginTransaction(), "fragmen");
+        fragment.show(getSupportFragmentManager().beginTransaction(), "fragment");
     }
 
     /**
-     * 自定义登录对话框
+     * 自定义创建项目对话框
      */
     public void customDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -365,19 +1006,36 @@ public class MainActivity extends AppCompatActivity {
                 String prjName = edtName.getText().toString();
                 //判断这个工程是否已经存在了
                 DaoSession daoSession = MyApplication.getINSTANT().getDaoSession();
-                List<ProjectBean> list2 = daoSession.getProjectBeanDao().queryBuilder().where(ProjectBeanDao.Properties.Name.eq(prjName)).build().list();
-                if (list2.size() != 0) {
+                List<ProjectBitBean> list2 = daoSession.getProjectBitBeanDao().queryBuilder()
+                        .where(ProjectBitBeanDao.Properties.PrjName.eq(prjName)).build().list();
+
+                if (list2.size() != 0 || prjName.isEmpty()) {
                     Toast.makeText(MainActivity.this, "此项目名称已经存在", Toast.LENGTH_LONG).show();
                     return;
+
                 } else {
-                    ProjectBean projectBean = new ProjectBean();
+                    ProjectBitBean projectBean = new ProjectBitBean();
                     projectBean.setDate(DateTimeUtil.getCurrentDateFromFormat(DateTimeUtil.DATE_FORMAT_YYYYMMDD_HHMMSS));
-                    projectBean.setName(prjName);
-                    daoSession.getProjectBeanDao().insert(projectBean);
+                    projectBean.setPrjName(prjName);
+                    daoSession.getProjectBitBeanDao().insert(projectBean);
                     //创建文件夹
                     FileUtils.getInstance().mkdirs(SD + APP_PAHT + "/" + prjName);
-                    list.add(0,prjName);
+                   /* //创建三个文件夹
+                    FileUtils.getInstance().mkdirs(SD + APP_PAHT + "/" + prjName + PICTURE + "/1");
+                    FileUtils.getInstance().mkdirs(SD + APP_PAHT + "/" + prjName + PICTURE + "/2");
+                    FileUtils.getInstance().mkdirs(SD + APP_PAHT + "/" + prjName + PICTURE + "/3");*/
+                    projectlist.add(0, prjName);
+                    bitProject = prjName;
+                    spBitProject.setSelection(0);
+                    adapter.notifyDataSetChanged();
+                    listType.clear();
+                    adapterType.notifyDataSetChanged();
+                    list.clear();
                     arrayAdapter.notifyDataSetChanged();
+                    ;
+                    setViewGone();
+
+                    clearView();
                     dialog.dismiss();
                 }
             }
@@ -389,6 +1047,18 @@ public class MainActivity extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
+    }
+
+    private void setViewGone() {
+        layout1.setVisibility(View.GONE);
+        layout2.setVisibility(View.GONE);
+        layout3.setVisibility(View.GONE);
+        layout4.setVisibility(View.GONE);
+        layout5.setVisibility(View.GONE);
+        layout6.setVisibility(View.GONE);
+        layout7.setVisibility(View.GONE);
+        layout8.setVisibility(View.GONE);
+        layout9.setVisibility(View.GONE);
     }
 
     /**
@@ -439,7 +1109,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceiveLocation(BDLocation location) {
             //mapView 销毁后不在处理新接收的位置
-            if (location == null || mMapView == null){
+            if (location == null || mMapView == null) {
                 return;
             }
             MyLocationData locData = new MyLocationData.Builder()
@@ -448,6 +1118,8 @@ public class MainActivity extends AppCompatActivity {
                     .direction(location.getDirection()).latitude(location.getLatitude())
                     .longitude(location.getLongitude()).build();
             mBaiduMap.setMyLocationData(locData);
+            x = location.getLongitude();
+            y = location.getLatitude();
         }
     }
 

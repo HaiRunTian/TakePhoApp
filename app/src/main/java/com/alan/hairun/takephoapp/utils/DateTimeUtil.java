@@ -31,6 +31,16 @@ public class DateTimeUtil {
     public static String getCurrentTime(Date date, String format) {
         return new SimpleDateFormat(format).format(date);
     }
+    /**
+     *  按格式取当前时间文本
+     */
+    public static String setCurrentTime(String format) {
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        Date date = new Date(System.currentTimeMillis());
+        String currentTime = sdf.format(date);
+        return currentTime;
+    }
+
     /***
      * 返回当前日,如：26
      * @return

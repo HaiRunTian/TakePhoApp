@@ -16,7 +16,7 @@ public class LogUtills {
     /**
      *  是否需要打印bug，可以在application的onCreate函数里面初始化
      */
-    private static boolean isDebug = false;
+    private static boolean isDebug = true;
     private static final String TAG = "TcPipe";
     public static String getToaskInfo() {
         final Throwable t = new Throwable();

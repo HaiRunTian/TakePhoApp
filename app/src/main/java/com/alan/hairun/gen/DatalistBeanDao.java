@@ -25,11 +25,12 @@ public class DatalistBeanDao extends AbstractDao<DatalistBean, Long> {
      */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Name = new Property(1, String.class, "name", false, "NAME");
-        public final static Property Picture = new Property(2, String.class, "picture", false, "PICTURE");
-        public final static Property Date = new Property(3, String.class, "date", false, "DATE");
-        public final static Property Lng = new Property(4, double.class, "lng", false, "LNG");
-        public final static Property Lat = new Property(5, double.class, "lat", false, "LAT");
+        public final static Property BitName = new Property(1, String.class, "bitName", false, "BIT_NAME");
+        public final static Property Name = new Property(2, String.class, "name", false, "NAME");
+        public final static Property Picture = new Property(3, String.class, "picture", false, "PICTURE");
+        public final static Property Date = new Property(4, String.class, "date", false, "DATE");
+        public final static Property Lng = new Property(5, double.class, "lng", false, "LNG");
+        public final static Property Lat = new Property(6, double.class, "lat", false, "LAT");
     }
 
 
@@ -46,11 +47,12 @@ public class DatalistBeanDao extends AbstractDao<DatalistBean, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"DATALIST_BEAN\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
-                "\"NAME\" TEXT," + // 1: name
-                "\"PICTURE\" TEXT," + // 2: picture
-                "\"DATE\" TEXT," + // 3: date
-                "\"LNG\" REAL NOT NULL ," + // 4: lng
-                "\"LAT\" REAL NOT NULL );"); // 5: lat
+                "\"BIT_NAME\" TEXT," + // 1: bitName
+                "\"NAME\" TEXT," + // 2: name
+                "\"PICTURE\" TEXT," + // 3: picture
+                "\"DATE\" TEXT," + // 4: date
+                "\"LNG\" REAL NOT NULL ," + // 5: lng
+                "\"LAT\" REAL NOT NULL );"); // 6: lat
     }
 
     /** Drops the underlying database table. */
@@ -68,22 +70,27 @@ public class DatalistBeanDao extends AbstractDao<DatalistBean, Long> {
             stmt.bindLong(1, id);
         }
  
+        String bitName = entity.getBitName();
+        if (bitName != null) {
+            stmt.bindString(2, bitName);
+        }
+ 
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(2, name);
+            stmt.bindString(3, name);
         }
  
         String picture = entity.getPicture();
         if (picture != null) {
-            stmt.bindString(3, picture);
+            stmt.bindString(4, picture);
         }
  
         String date = entity.getDate();
         if (date != null) {
-            stmt.bindString(4, date);
+            stmt.bindString(5, date);
         }
-        stmt.bindDouble(5, entity.getLng());
-        stmt.bindDouble(6, entity.getLat());
+        stmt.bindDouble(6, entity.getLng());
+        stmt.bindDouble(7, entity.getLat());
     }
 
     @Override
@@ -95,22 +102,27 @@ public class DatalistBeanDao extends AbstractDao<DatalistBean, Long> {
             stmt.bindLong(1, id);
         }
  
+        String bitName = entity.getBitName();
+        if (bitName != null) {
+            stmt.bindString(2, bitName);
+        }
+ 
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(2, name);
+            stmt.bindString(3, name);
         }
  
         String picture = entity.getPicture();
         if (picture != null) {
-            stmt.bindString(3, picture);
+            stmt.bindString(4, picture);
         }
  
         String date = entity.getDate();
         if (date != null) {
-            stmt.bindString(4, date);
+            stmt.bindString(5, date);
         }
-        stmt.bindDouble(5, entity.getLng());
-        stmt.bindDouble(6, entity.getLat());
+        stmt.bindDouble(6, entity.getLng());
+        stmt.bindDouble(7, entity.getLat());
     }
 
     @Override
@@ -122,11 +134,12 @@ public class DatalistBeanDao extends AbstractDao<DatalistBean, Long> {
     public DatalistBean readEntity(Cursor cursor, int offset) {
         DatalistBean entity = new DatalistBean( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // picture
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // date
-            cursor.getDouble(offset + 4), // lng
-            cursor.getDouble(offset + 5) // lat
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // bitName
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // picture
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // date
+            cursor.getDouble(offset + 5), // lng
+            cursor.getDouble(offset + 6) // lat
         );
         return entity;
     }
@@ -134,11 +147,12 @@ public class DatalistBeanDao extends AbstractDao<DatalistBean, Long> {
     @Override
     public void readEntity(Cursor cursor, DatalistBean entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setPicture(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setDate(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setLng(cursor.getDouble(offset + 4));
-        entity.setLat(cursor.getDouble(offset + 5));
+        entity.setBitName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setPicture(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setDate(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setLng(cursor.getDouble(offset + 5));
+        entity.setLat(cursor.getDouble(offset + 6));
      }
     
     @Override
