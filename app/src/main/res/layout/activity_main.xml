@@ -31,12 +31,11 @@
             android:spinnerMode="dialog" />
     </RelativeLayout>
 
-    <com.baidu.mapapi.map.MapView
+    <com.tianditu.android.maps.MapView
         android:layout_below="@+id/layout"
-        android:id="@+id/bmapView"
+        android:id="@+id/main_mapview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true" />
+        android:layout_height="match_parent"/>
 
     <LinearLayout
         android:layout_marginBottom="120dp"
@@ -418,6 +417,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <Button
+            android:layout_marginLeft="5dp"
             android:textColor="@color/white"
             android:background="@drawable/login_btn"
             android:text="保存"
@@ -426,12 +426,23 @@
             android:layout_height="30dp"/>
 
         <Button
+            android:layout_marginLeft="5dp"
             android:textColor="@color/white"
             android:background="@drawable/login_btn"
             android:text="导出"
             android:id="@+id/btnExport"
             android:layout_width="wrap_content"
             android:layout_height="30dp"/>
+
+        <Button
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/white"
+            android:background="@drawable/login_btn"
+            android:text="收起"
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"/>
+
     </LinearLayout>
 
 
@@ -442,6 +453,16 @@
         android:layout_alignParentBottom="true"
         android:spinnerMode="dropdown"
         android:id="@+id/spBitProject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageButton
+
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_above="@+id/spBitProject"
+        android:background="@mipmap/ic_open_local"
+        android:id="@+id/openLocal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

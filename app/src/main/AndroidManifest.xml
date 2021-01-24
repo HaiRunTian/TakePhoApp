@@ -18,7 +18,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <!-- 访问网络，网络定位需要上网-->
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
-
+    <uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
 
 
     <application
@@ -30,6 +31,9 @@
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/NoTitleBarActivityStyle">
+
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -54,13 +58,9 @@
         </provider>
 
         <meta-data
-            android:name="com.baidu.lbsapi.API_KEY"
-            android:value="t5SxbGeOU5R0qpPmkAf8vz5ibuBPGOyO" >
-        </meta-data>
+            android:name="com.tianditu.apikey"
+            android:value="9b87b02ed345f1c351f31ce6f7dcfcfc" />
 
-        <service android:name="com.baidu.location.f"
-            android:enabled="true"
-            android:process=":remote"/>
     </application>
 
 </manifest>

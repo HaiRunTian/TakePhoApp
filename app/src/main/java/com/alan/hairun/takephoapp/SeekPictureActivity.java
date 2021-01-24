@@ -1,18 +1,30 @@
 package com.alan.hairun.takephoapp;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.alan.hairun.takephoapp.utils.CameraUtils;
+import com.alan.hairun.takephoapp.utils.DateTimeUtil;
 import com.alan.hairun.takephoapp.utils.FileUtils;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +57,6 @@ public class SeekPictureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.seekpicture_activity_layout);
         bind = ButterKnife.bind(this);
-
         initEvent();
         initData();
 
@@ -54,11 +65,13 @@ public class SeekPictureActivity extends AppCompatActivity {
     private void initData() {
         fragments = new ArrayList<>();
         String path = getIntent().getStringExtra("path");
+        double x =  getIntent().getDoubleExtra("x",0.0);
+        double y = getIntent().getDoubleExtra("y",0.0);
         int fileCount = FileUtils.getInstance().getFoldeCount(path);
         for (int i = 0; i < fileCount; i++) {
             int j = i + 1;
             tablayout.addTab(tablayout.newTab().setText("文件夹" + j));
-            fragments.add(PageFragment.newInstance(path + "/" + j));
+            fragments.add(PageFragment.newInstance(path + "/" + j,x,y));
         }
 
         mAdapter = new ViewPagerFragmentStateAdapter(this,fragments);
@@ -73,6 +86,28 @@ public class SeekPictureActivity extends AppCompatActivity {
             case R.id.tvTitle:
                 finish();
                 break;
+
+        default:break;
+        }
+    }
+
+
+
+    /**
+     * 请求权限
+     *
+     * @author: Alan
+     * created at: 2020/5/10 0010 下午 2:04
+     * @deprecated :
+     */
+    private boolean hasPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, CameraUtils.PHOTO_REQUEST_TAKEPHOTO);
+            return false;
+        } else {
+            return true;
         }
     }
 

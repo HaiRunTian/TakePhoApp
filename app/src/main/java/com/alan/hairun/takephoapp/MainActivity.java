@@ -42,20 +42,16 @@ import com.alan.hairun.takephoapp.utils.ImportDataProgressUtil;
 import com.alan.hairun.takephoapp.utils.LogUtills;
 import com.alan.hairun.takephoapp.utils.SelectExcelActivity;
 import com.alan.hairun.takephoapp.utils.SpinnerDropdownListManager;
-import com.baidu.location.BDAbstractLocationListener;
-import com.baidu.location.BDLocation;
-import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
-import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
-import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.MyLocationConfiguration;
-import com.baidu.mapapi.map.MyLocationData;
+import com.tianditu.android.maps.GeoPoint;
+import com.tianditu.android.maps.MapController;
+import com.tianditu.android.maps.MapView;
+import com.tianditu.android.maps.MyLocationOverlay;
+import com.tianditu.maps.Map.MapLayer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -196,6 +192,8 @@ public class MainActivity extends AppCompatActivity {
     Button btnSave;
     @BindView(R.id.btnExport)
     Button btnExport;
+    @BindView(R.id.openLocal)
+    ImageButton openLocal;
     private Spinner spProject;
     private ImageButton btnAdd;
     private List<String> projectlist;
@@ -210,9 +208,6 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter adapterType;
     private ArrayAdapter arrayAdapter;
     private ImageButton btnDel, imgBtnSeekPic;
-    private MapView mMapView;
-    private BaiduMap mBaiduMap;
-    private LocationClient mLocationClient;
     public static final String QQ_FILE_PATH = SD + "/Android/data/com.tencent.mobileqq/Tencent/QQfile_recv";
     public static final String WECHAT_FILE_PATH = SD + "/tencent/MicroMsg/Download";
     public static String FATH = "";
@@ -288,6 +283,8 @@ public class MainActivity extends AppCompatActivity {
     private double y;
     private int count;
     private List<CheckDataBean> checkDataBeans;
+    private MapView mapView;
+    private MapController mMapController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -300,35 +297,20 @@ public class MainActivity extends AppCompatActivity {
         intEvent();
         initLocal();
 
+
     }
 
     private void initLocal() {
         try {
-            //定位初始化
-            mBaiduMap = mMapView.getMap();
-            //开启定位图层
-            mBaiduMap.setMyLocationEnabled(true);
-            mLocationClient = new LocationClient(MainActivity.this);
-            //通过LocationClientOption设置LocationClient相关参数
-            LocationClientOption option = new LocationClientOption();
-            option.setOpenGps(true); // 打开gps
-            option.setCoorType("gcj02"); // 设置坐标类型
-            option.setScanSpan(1000);
-
-            //设置locationClientOption
-            mLocationClient.setLocOption(option);
-            //注册LocationListener监听器
-            MyLocationListener myLocationListener = new MyLocationListener();
-            mLocationClient.registerLocationListener(myLocationListener);
-            //开启地图定位图层
-            mLocationClient.start();
-            MyLocationConfiguration locationConfiguration = new MyLocationConfiguration(MyLocationConfiguration.LocationMode.FOLLOWING,
-                    true, BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
-            mBaiduMap.setMyLocationConfiguration(locationConfiguration);
-            MapStatus.Builder builder = new MapStatus.Builder();
-            builder.zoom(20.0f);
-            mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
-
+            mapView.setBuiltInZoomControls(true);
+            //得到mMapView的控制权,可以用它控制和驱动平移和缩放
+            mMapController = mapView.getController();
+            mapView.setMapType(MapView.TMapType.MAP_TYPE_IMG);
+            //用给定的经纬度构造一个GeoPoint，单位是微度 (度 * 1E6)
+            GeoPoint point = new GeoPoint((int) (39.915 * 1E6), (int) (116.404 * 1E6));
+            //设置地图中心点
+            mMapController.setCenter(point);
+            initTempLocalXy();
             if (!GpsUtils.isOPen(MainActivity.this)) {
                 Toast.makeText(MainActivity.this, "请先打开GPS定位功能", Toast.LENGTH_LONG).show();
                 GpsUtils.openGPS(MainActivity.this);
@@ -388,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < projectBeans.size(); i++) {
             list.add(projectBeans.get(i).getPrjName());
-            //穿件文件
+            //创建文件
             FileUtils.getInstance().mkdirs(SD + APP_PAHT + "/" + projectBeans.get(i).getPrjName());
 
         }
@@ -433,6 +415,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void intEvent() {
 
+        openLocal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!GpsUtils.isOPen(MainActivity.this)) {
+                    Toast.makeText(MainActivity.this, "请先打开GPS定位功能", Toast.LENGTH_LONG).show();
+                    GpsUtils.openGPS(MainActivity.this);
+                }else {
+                    initTempLocalXy();
+                }
+
+            }
+        });
+
         spBitProject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -462,7 +457,7 @@ public class MainActivity extends AppCompatActivity {
                 arrayAdapter.notifyDataSetChanged();
 
                 clearView();*/
-                setViewGone();
+                setViewGone(View.GONE);
                 listType.addAll(list2);
                 adapterType.notifyDataSetChanged();
                 spType.setSelection(0);
@@ -500,7 +495,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 list.addAll(list1);
-                setViewGone();
+                setViewGone(View.GONE);
                 arrayAdapter.notifyDataSetChanged();
                 spProject.setSelection(0);
             }
@@ -635,6 +630,27 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initTempLocalXy() {
+        //创建MyLocationOverlay
+        MyLocationOverlay myLocationOverlay = new MyLocationOverlay(MainActivity.this, mapView);
+        //启用指南针位置更新
+        myLocationOverlay.enableCompass();
+        //启用我的位置
+        myLocationOverlay.enableMyLocation();
+        mapView.addOverlay(myLocationOverlay);
+        //获得当前位置
+        GeoPoint mPoint = myLocationOverlay.getMyLocation();
+         x = (double)mPoint.getLongitudeE6() / 1000000.0D;
+         y = (double)mPoint.getLatitudeE6()/ 1000000.0D;
+
+        LogUtills.i("x =  " + x + "  y = " + y);
+
+        //动画移动到当前位置
+        mMapController.animateTo(mPoint);
+        //设置地图zoom级别
+        mMapController.setZoom(18);
+    }
+
     private void clearView() {
         tv11.setText("");
         tv12.setText("");
@@ -708,7 +724,7 @@ public class MainActivity extends AppCompatActivity {
             tv15.setText(checkDataBeans.get(0).getTwo() == null ? "" : checkDataBeans.get(0).getTwo());
             tv16.setText(checkDataBeans.get(0).getThree() == null ? "" : checkDataBeans.get(0).getThree());
         } else {
-            setViewGone();
+            setViewGone(View.GONE);
         }
 
         if (checkDataBeans.size() > 1) {
@@ -819,11 +835,11 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initView() {
         //获取地图控件引用
-        mMapView = (MapView) findViewById(R.id.bmapView);
         spProject = findViewById(R.id.spProject);
         btnAdd = findViewById(R.id.btnAdd);
         btnDel = findViewById(R.id.btnDeletet);
         imgBtnSeekPic = findViewById(R.id.pic);
+        mapView = findViewById(R.id.main_mapview);
 
         imgBtnSeekPic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -833,7 +849,10 @@ public class MainActivity extends AppCompatActivity {
                 projectName = spProject.getSelectedItem().toString();
                 String path = SD + APP_PAHT + "/" + bitProject + "/" + projectName + PICTURE;
                 if (FileUtils.getInstance().getFoldeCount(path) != 0) {
+                    initTempLocalXy();
                     intent.putExtra("path", path);
+                    intent.putExtra("x",x);
+                    intent.putExtra("y",y);
                     startActivity(intent);
                 } else {
                     Toast.makeText(MainActivity.this, "此项目暂无照片", Toast.LENGTH_LONG).show();
@@ -858,6 +877,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //添加照片
         ImageButton btnAddImg = findViewById(R.id.btnAddPicture);
         btnAddImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -866,6 +886,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "你还没有创建项目，请先创建项目", Toast.LENGTH_LONG).show();
                     return;
                 }
+                //展示照片拍照选项
                 showDialog();
             }
         });
@@ -899,8 +920,22 @@ public class MainActivity extends AppCompatActivity {
                 List<CheckDataBean> checkDataBeans = daoSession.getCheckDataBeanDao().queryBuilder()
                         .where(CheckDataBeanDao.Properties.BitName.eq(bitProject)).list();
                 String path = SD + APP_PAHT + "/" + bitProject + "/" + DateTimeUtil.getCurrentDateFromFormat(DateTimeUtil.DATE_FORMAT_YYYYMMDD_HHMMSS) + ".xls";
-                ExcelUtilsOfPoi.initExcel(MainActivity.this,path,checkDataBeans);
+                ExcelUtilsOfPoi.initExcel(MainActivity.this, path, checkDataBeans);
 
+            }
+        });
+
+        Button btn = findViewById(R.id.btnClose);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (layout1.getVisibility() == View.VISIBLE){
+                   setViewGone(View.GONE);
+                   btn.setText("展开");
+                }else {
+                    setViewGone(View.VISIBLE);
+                    btn.setText("收起");
+                }
             }
         });
     }
@@ -973,9 +1008,20 @@ public class MainActivity extends AppCompatActivity {
         projectName = spProject.getSelectedItem().toString();
         //获取当前目录有多少个子文件夹最大名称号
         int fileIndexMax = FileUtils.getInstance().getFileIndexMax(SD + APP_PAHT + "/" + bitProject + "/" + projectName + PICTURE);
-        fileIndexMax++;
+//        fileIndexMax++;
         //创建文件夹爱
-        FileUtils.getInstance().mkdirs(SD + APP_PAHT + "/" + bitProject + "/" + projectName + PICTURE + "/" + fileIndexMax);
+
+        String[] str = new String[fileIndexMax];
+        for (int i = 0; i < fileIndexMax; i++) {
+            str[i] = String.valueOf(i+1);
+        }
+        //刷新定位
+        initTempLocalXy();
+       showDialog(str,"拍照路径");
+
+    }
+
+    private void openTakePhto(int fileIndexMax) {
         TakePhoFragment fragment = new TakePhoFragment();
         Bundle bundle = new Bundle();
         bundle.putString("father", SD + APP_PAHT + "/" + bitProject + "/" + projectName + PICTURE);
@@ -1032,8 +1078,7 @@ public class MainActivity extends AppCompatActivity {
                     adapterType.notifyDataSetChanged();
                     list.clear();
                     arrayAdapter.notifyDataSetChanged();
-                    ;
-                    setViewGone();
+                    setViewGone(View.GONE);
 
                     clearView();
                     dialog.dismiss();
@@ -1049,16 +1094,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setViewGone() {
-        layout1.setVisibility(View.GONE);
-        layout2.setVisibility(View.GONE);
-        layout3.setVisibility(View.GONE);
-        layout4.setVisibility(View.GONE);
-        layout5.setVisibility(View.GONE);
-        layout6.setVisibility(View.GONE);
-        layout7.setVisibility(View.GONE);
-        layout8.setVisibility(View.GONE);
-        layout9.setVisibility(View.GONE);
+    private void setViewGone(int i) {
+        layout1.setVisibility(i);
+        layout2.setVisibility(i);
+        layout3.setVisibility(i);
+        layout4.setVisibility(i);
+        layout5.setVisibility(i);
+        layout6.setVisibility(i);
+        layout7.setVisibility(i);
+        layout8.setVisibility(i);
+        layout9.setVisibility(i);
     }
 
     /**
@@ -1081,47 +1126,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-
-        //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
-        mMapView.onResume();
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-
-        //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
-        mMapView.onPause();
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        mLocationClient.stop();
-        mBaiduMap.setMyLocationEnabled(false);
-        mMapView.onDestroy();
-        mMapView = null;
         super.onDestroy();
 
     }
 
-    public class MyLocationListener extends BDAbstractLocationListener {
-        @Override
-        public void onReceiveLocation(BDLocation location) {
-            //mapView 销毁后不在处理新接收的位置
-            if (location == null || mMapView == null) {
-                return;
-            }
-            MyLocationData locData = new MyLocationData.Builder()
-                    .accuracy(location.getRadius())
-                    // 此处设置开发者获取到的方向信息，顺时针0-360
-                    .direction(location.getDirection()).latitude(location.getLatitude())
-                    .longitude(location.getLongitude()).build();
-            mBaiduMap.setMyLocationData(locData);
-            x = location.getLongitude();
-            y = location.getLatitude();
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -1137,5 +1155,77 @@ public class MainActivity extends AppCompatActivity {
             default:
                 break;
         }
+    }
+
+    /**
+     * 多选
+     * @Params :
+     * @author :HaiRun
+     * @date :2019/7/10  15:12
+     */
+    private void showDialog(final String[] data, String title) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this, android.app.AlertDialog.THEME_HOLO_LIGHT);
+        builder.setTitle(title);
+        Map<Integer, Boolean> map = new HashMap<Integer, Boolean>();
+        final boolean[] selectItems = new boolean[data.length];
+        for (int i = 0; i < data.length; i++) {
+            selectItems[i] = false;
+            map.put(i, false);
+        }
+
+        /**
+         * 第一个参数指定我们要显示的一组下拉多选框的数据集合
+         * 第二个参数代表哪几个选项被选择，如果是null，则表示一个都不选择，如果希望指定哪一个多选选项框被选择，
+         * 需要传递一个boolean[]数组进去，其长度要和第一个参数的长度相同，例如 {true, false, false, true};
+         * 第三个参数给每一个多选项绑定一个监听器
+         */
+        builder.setMultiChoiceItems(data, selectItems, new DialogInterface.OnMultiChoiceClickListener() {
+            StringBuffer sb = new StringBuffer(100);
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                if (isChecked) {
+                    //选择的选项保存到sb中
+//                    sb.append(data[which] + "+");
+                    map.put(which, true);
+                }
+
+            }
+        });
+
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+
+
+        builder.setNeutralButton("新增", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int i=  data.length + 1;
+                FileUtils.getInstance().mkdirs(SD + APP_PAHT + "/" + bitProject + "/" + projectName + PICTURE + "/" + i);
+                LogUtills.i("创建文件夹 = " +i);
+                openTakePhto(i);
+                dialog.dismiss();
+            }
+        });
+
+
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+               String path = "";
+                for (int i = 0; i < map.size(); i++) {
+                    if (map.get(i)) {
+                        path = (data[i]);
+                    }
+                }
+                openTakePhto(Integer.valueOf(path));
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
     }
 }

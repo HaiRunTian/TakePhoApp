@@ -51,9 +51,9 @@ public class LoginActivity extends AppCompatActivity implements IGetNetTime {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         PermissionUtils.initPermission(this, new PermissionUtils.PermissionHolder());
-        LimitByTimeUtil.ins(this).getTimeFromNet(this);
-        initData();
+//        LimitByTimeUtil.ins(this).getTimeFromNet(this);
 
+        initData();
         Button button = findViewById(R.id.login);
         button.setOnClickListener(new View.OnClickListener() {
             @Override

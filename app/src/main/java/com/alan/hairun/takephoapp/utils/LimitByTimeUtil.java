@@ -49,7 +49,7 @@ public class LimitByTimeUtil {
         try {
             nowTime = new SimpleDateFormat(format).parse(currTime);
             startTime = new SimpleDateFormat(format).parse("2020-01-01 00:00:00");
-            endTime = new SimpleDateFormat(format).parse("2020-7-15 23:59:59");
+            endTime = new SimpleDateFormat(format).parse("2021-10-31 23:59:59");
 
             LogUtills.i("LimitByTimeUtil", nowTime.toString() + "-------" + startTime.toString() + "------" + endTime.toString());
             if (nowTime.getTime() == startTime.getTime()
@@ -102,7 +102,7 @@ public class LimitByTimeUtil {
                 try {
                     //http://www.baidu.com 百度
                     // http://www.ntsc.ac.cn 中国科学院国家授时中心
-                    url = new URL("http://www.ntsc.ac.cn");
+                    url = new URL("http://www.baidu.com");
                     //生成连接对象
                     URLConnection baidu = url.openConnection();
                     baidu.setConnectTimeout(5000);
